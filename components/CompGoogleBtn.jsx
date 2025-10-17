@@ -13,7 +13,7 @@ export default function CompGoogleBtn() {
       onSuccess={async (credentialResponse) => {
         // console.log(credentialResponse);
         const res = await loginWithGoogle(credentialResponse.credential);
-        if (res === 200 || res === 201) navigate("/");
+        if (res === 200 || res === 201) navigate("/root");
       }}
       onError={() => {
         console.log("Login Failed");

@@ -16,7 +16,7 @@ export default function CompNavbar() {
         <button
           className="font-anton uppercase text-3xl px-4 py-0.5 cursor-pointer tracking-wider rounded-sm shadow-black shadow-sm hover:shadow-md transition-all duration-500 bg-clr7 text-clr1"
           title="Home"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/root")}
         >
           My Drive
         </button>

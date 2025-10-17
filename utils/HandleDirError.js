@@ -15,7 +15,7 @@ export function handleErrResp(
     //* ERROR 400
   } else if (status === 404 && message === dirErr) {
     setError(`${message}, Redirecting to Home !`);
-    navigate("/");
+    navigate("/root");
     setTimeout(() => {
       setError("");
     }, 3000);

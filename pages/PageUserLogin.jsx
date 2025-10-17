@@ -20,7 +20,7 @@ export default function PageUserLogin() {
       console.log(error.message);
     },
     onSuccess: (data) => {
-      navigate("/");
+      navigate("/root");
       console.log(data);
     },
   });

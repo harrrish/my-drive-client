@@ -14,7 +14,7 @@ export function handleFileErrResp(
     setErrorModal(true);
     //* ERROR 400
   } else if (status === 400 && message === fileErr) {
-    navigate("/");
+    navigate("/root");
     setError(`${message}, Redirected to Home !`);
     console.log(message);
     setTimeout(() => {

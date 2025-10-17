@@ -6,16 +6,20 @@ import PageBin from "../pages/PageBin";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <PageDirectoryView />,
-  },
-  {
     path: "/register",
     element: <PageUserRegister />,
   },
   {
+    path: "/",
+    element: <PageUserLogin />,
+  },
+  {
     path: "/login",
     element: <PageUserLogin />,
+  },
+  {
+    path: "/root",
+    element: <PageDirectoryView />,
   },
   {
     path: "/bin",
