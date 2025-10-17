@@ -49,7 +49,7 @@ export const userLoginSubmit = async (formData) => {
     const { data } = await axiosWithCreds.post("/user/login", formData);
     return { success: true, message: data.message };
   } catch (error) {
-    return {
+    throw {
       success: false,
       message: axios.isAxiosError(error)
         ? error.response?.data?.error || "User login failed !"
