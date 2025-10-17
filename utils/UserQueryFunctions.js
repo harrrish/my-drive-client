@@ -47,13 +47,15 @@ export const userRegSubFun = async (formData) => {
 export const userLoginSubmit = async (formData) => {
   try {
     const { data } = await axiosWithCreds.post("/user/login", formData);
-    return { success: true, message: data.message };
+    if (data) {
+      return { success: true, message: data.message };
+    }
   } catch (error) {
-    throw {
+    throw new {
       success: false,
       message: axios.isAxiosError(error)
         ? error.response?.data?.error || "User login failed !"
         : "Internal Server Error !",
-    };
+    }();
   }
 };
