@@ -1,13 +1,11 @@
 import { IoLogOut } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { BiSolidPurchaseTag } from "react-icons/bi";
-import { FaTrashAlt } from "react-icons/fa";
 import { UserDetailsContext } from "../utils/Contexts";
 import { useContext } from "react";
 import { calSize } from "../utils/CalculateFileSize";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
-
 export default function CompUserProfile() {
   const navigate = useNavigate();
 

@@ -81,7 +81,7 @@ export default function PageUserLogin() {
             <button
               type="button"
               onClick={() => mutate(formData)}
-              className={`w-full py-2   text-lg px-4 border font-bebas tracking-wider text-clr1 shadow-sm  bg-clr5 hover:border-2 cursor-pointer hover:text-clr1`}
+              className={`w-full py-2 text-lg px-4 border-2 font-bebas tracking-wider text-clr1 shadow-sm  bg-clr5 hover:border-2 cursor-pointer hover:text-clr1`}
             >
               {isPending ? "Logging in..." : "Login"}
             </button>
