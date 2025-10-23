@@ -4,8 +4,8 @@ import { BiSolidPurchaseTag } from "react-icons/bi";
 import { UserDetailsContext } from "../utils/Contexts";
 import { useContext } from "react";
 import { calSize } from "../utils/CalculateFileSize";
+import { baseURL } from "../src/main";
 
-const baseURL = import.meta.env.VITE_BASE_URL;
 export default function CompUserProfile() {
   const navigate = useNavigate();
 

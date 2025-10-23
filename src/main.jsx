@@ -2,6 +2,7 @@ import App from "./App.jsx";
 import "./index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ErrorModalProvider } from "../Contexts/ErrorModalProvider.jsx";
@@ -16,7 +17,9 @@ import { UserDetailsProvider } from "../Contexts/UserDetailsProvider.jsx";
 import { UserViewProvider } from "../Contexts/UserViewContext.jsx";
 import { ListViewProvider } from "../Contexts/ListViewProvider.jsx";
 
-const clientId = import.meta.env.VITE_GOOGLE_CLIENT_Id;
+export const clientId = import.meta.env.VITE_GOOGLE_CLIENT_Id;
+export const baseURL = import.meta.env.VITE_BASE_URL;
+console.log({ baseURL });
 
 export const queryClient = new QueryClient({
   defaultOptions: {
