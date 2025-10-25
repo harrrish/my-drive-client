@@ -1,37 +1,20 @@
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { userLoginSubmit } from "../utils/UserQueryFunctions";
 import CompLoginNav from "../components/CompLoginNav";
-import CompError from "../components/CompError";
 import CompGoogleBtn from "../components/CompGoogleBtn";
 import CompLoginToRegister from "../components/CompLoginToRegister";
+import { axiosWithCreds } from "../utils/AxiosInstance";
+import axios from "axios";
+import { ErrorModalContext, UserSettingViewContext } from "../utils/Contexts";
 
 export default function PageUserLogin() {
   const navigate = useNavigate();
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "alpha@gmail.com",
     password: "Qwerty@12345",
   });
-
-  const { mutate, isPending, error, reset } = useMutation({
-    mutationFn: userLoginSubmit,
-    onError: (error) => {
-      console.log(error.message);
-    },
-    onSuccess: (data) => {
-      navigate("/root");
-      console.log(data);
-    },
-  });
-
-  useEffect(() => {
-    setTimeout(() => {
-      reset();
-    }, 3000);
-  }, [error, reset]);
-
-  //* HANDLING FORM CHANGE
+  //* ==========>HANDLING FORM CHANGE
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -40,15 +23,41 @@ export default function PageUserLogin() {
     });
   };
 
+  const { setErrorModal } = useContext(ErrorModalContext);
+  const { setUserView } = useContext(UserSettingViewContext);
+
+  async function handleLogin() {
+    const { email, password } = formData;
+    if (!email.trim() || !password.trim()) {
+      setError("Invalid Credentials");
+      setTimeout(() => setError(""), 3000);
+    } else {
+      try {
+        const { data } = await axiosWithCreds.post("/user/login", formData);
+        console.log(data.message);
+        setErrorModal(false);
+        setUserView(false);
+        navigate("/");
+      } catch (error) {
+        const errorMsg = axios.isAxiosError(error)
+          ? error.response?.data?.error || "User login failed!"
+          : "Something went wrong!";
+        setError(errorMsg);
+        setTimeout(() => setError(""), 3000);
+      }
+    }
+  }
+
   return (
     <div className="bg-gray-200 min-h-[100vh] flex justify-center items-center font-body">
-      <div className="w-[90%] sm:max-w-md mx-auto p-6 shadow-lg flex flex-col gap-2 font-f1 rounded-sm bg-clr1">
+      <div className="w-[90%] sm:max-w-md mx-auto p-6 shadow-lg flex flex-col gap-4 font-bookerly rounded-sm bg-clr1">
+        {/* //* ==========>NAVBAR */}
         <CompLoginNav />
 
-        <div className="flex flex-col gap-2 font-lex tracking-wide">
-          {/* //* EMAIL */}
+        <div className="flex flex-col gap-4 font-emb-display font-bold">
+          {/* //* ==========>EMAIL */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="email" className="block text-sm ">
+            <label htmlFor="email" className="block  ">
               Email
             </label>
             <input
@@ -61,9 +70,9 @@ export default function PageUserLogin() {
               className={`w-full px-3 py-2 border  shadow-sm focus:outline-blue-400`}
             />
           </div>
-          {/* //* PASSWORD */}
+          {/* //* ==========>PASSWORD */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="password" className="block text-sm ">
+            <label htmlFor="password" className="block  ">
               Password
             </label>
             <input
@@ -76,21 +85,26 @@ export default function PageUserLogin() {
               className={`w-full px-3 py-2 border  shadow-sm focus:outline-blue-400`}
             />
           </div>
-          {/* //* LOGIN BUTTON */}
+
+          {/* //* ==========>ERROR */}
+          {error && (
+            <h1 className="text-center bg-red-500 p-1 text-clr1">{error} !</h1>
+          )}
+
+          {/* //* ==========>LOGIN BUTTON */}
           <div>
             <button
               type="button"
-              onClick={() => mutate(formData)}
-              className={`w-full py-2 text-lg px-4 border-2 font-bebas tracking-wider text-clr1 shadow-sm  bg-clr5 hover:border-2 cursor-pointer hover:text-clr1`}
+              onClick={handleLogin}
+              className={`w-full py-2  px-4 border font-emb-display font-bold tracking-wider cursor-pointer shadow-sm bg-clr5 text-clr1 focus:outline-none`}
             >
-              {isPending ? "Logging in..." : "Login"}
+              Login
             </button>
           </div>
         </div>
 
-        {error && <CompError error={error.message} />}
-
-        <div className="flex flex-col items-center">
+        {/* //* ==========>FOOTER */}
+        <div className="font-emb flex flex-col gap-2 items-center">
           <CompLoginToRegister />
           <h1 className="text-center">Or</h1>
           <CompGoogleBtn />

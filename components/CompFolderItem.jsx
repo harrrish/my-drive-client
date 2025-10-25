@@ -1,134 +1,116 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { MdSave } from "react-icons/md";
 import { FaFolder } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { MdDelete } from "react-icons/md";
 import { GiCancel } from "react-icons/gi";
 import { MdOutlineDriveFileRenameOutline } from "react-icons/md";
 import { MdOutlineInfo } from "react-icons/md";
-import { useMutation } from "@tanstack/react-query";
-import { deleteFolder, renameFolder } from "../utils/DirQueryFunctions";
 import ModalFolderDetails from "../modals/ModalFolderDetails";
 import { calSize } from "../utils/CalculateFileSize";
+import { axiosWithCreds } from "../utils/AxiosInstance";
+import axios from "axios";
 import {
   ErrorContext,
-  ErrorModalContext,
+  FolderIDContext,
   UpdateContext,
-  UserViewContext,
+  UserSettingViewContext,
 } from "../utils/Contexts";
-import { handleErrResp } from "../utils/HandleDirError";
 
 export default function CompFolderItem({
-  _id,
-  name,
-  folderId,
-  size,
-  fetchDirectoryData,
-  path,
   createdAt,
+  filesCount,
+  foldersCount,
+  name,
+  parentFID,
+  size,
   updatedAt,
-  DirCount,
-  fileCount,
+  _id,
+  handleDirectoryDetails,
 }) {
+  const { setFolderID } = useContext(FolderIDContext);
+  const { setError } = useContext(ErrorContext);
+  const { setUpdate } = useContext(UpdateContext);
+
   // console.log(DirCount, fileCount);
-  const navigate = useNavigate();
   const [rename, setRename] = useState(false);
   const [directoryName, setDirectoryName] = useState(name);
   const [folderDetails, setFolderDetails] = useState(false);
 
-  const { setErrorModal } = useContext(ErrorModalContext);
-  const { setUpdate } = useContext(UpdateContext);
-  const { setError } = useContext(ErrorContext);
+  const { setUserView } = useContext(UserSettingViewContext);
 
-  const { setUserView } = useContext(UserViewContext);
+  async function handleRenameFolder() {
+    if (!directoryName.trim()) {
+      setError("Please provider a valid folder name");
+      setTimeout(() => setError(""), 3000);
+    } else {
+      try {
+        const { data, status } = await axiosWithCreds.patch(
+          `/directory/${_id || ""}`,
+          { folderName: directoryName }
+        );
+        if (status === 201) {
+          setFolderID(parentFID);
+          handleDirectoryDetails(parentFID);
+          setRename(false);
+        }
+        setUpdate(data.message);
+        setTimeout(() => setUpdate(""), 3000);
+      } catch (error) {
+        console.log(error);
+        const errMsg = axios.isAxiosError(error)
+          ? error.response?.data?.error || "Failed to rename folder"
+          : "Something went wrong";
+        console.log(errMsg);
+        setError(errMsg);
+        setTimeout(() => setError(""), 3000);
+      }
+    }
+  }
 
-  //* RENAME FOLDER
-  const {
-    mutate: renameFun,
-    error: renameError,
-    reset: renameReset,
-  } = useMutation({
-    mutationFn: renameFolder,
-    onError: (error) => {
-      const { status, message } = error;
-      console.log(message);
-      handleErrResp(
-        status,
-        message,
-        setError,
-        setErrorModal,
-        navigate,
-        setUpdate
+  async function handleDeleteFolder() {
+    try {
+      const { data, status } = await axiosWithCreds.delete(
+        `/directory/${_id || ""}`
       );
-    },
-    onSuccess: ({ data, status }) => {
-      console.log(data);
       if (status === 201) {
-        setError("");
-        setUpdate(`Folder "${name}" renamed to "${directoryName}" !`);
-        setTimeout(() => {
-          setUpdate("");
-        }, 3000);
+        setFolderID(parentFID);
+        handleDirectoryDetails(parentFID);
         setRename(false);
-        fetchDirectoryData(folderId);
       }
-    },
-  });
-
-  //* DELETE FOLDER
-  const { mutate: deleteFun } = useMutation({
-    mutationFn: deleteFolder,
-    onError: (error) => {
-      const { status, message } = error;
-      handleErrResp(
-        status,
-        message,
-        setError,
-        setErrorModal,
-        navigate,
-        setUpdate
-      );
-    },
-    onSuccess: ({ data, status }) => {
-      console.log(data.message);
-      setUserView(false);
-      // console.log(data);
-      if (status === 201) {
-        setError("");
-        setUpdate(`Folder "${name}" deleted !`);
-        fetchDirectoryData(folderId);
-        setTimeout(() => {
-          setUpdate("");
-        }, 3000);
-      }
-    },
-  });
-
-  useEffect(() => {
-    if (renameError) setTimeout(() => renameReset(), 3000);
-  }, [renameError, renameReset]);
+      setUpdate(data.message);
+      setTimeout(() => setUpdate(""), 3000);
+    } catch (error) {
+      console.log(error);
+      const errMsg = axios.isAxiosError(error)
+        ? error.response?.data?.error || "Failed to delete folder"
+        : "Something went wrong";
+      console.log(errMsg);
+      setError(errMsg);
+      setTimeout(() => setError(""), 3000);
+    }
+  }
 
   return (
     <div>
       <div>
-        {/* //* FOLDER DETAILS MODAL */}
+        {/* //* ==========>FOLDER DETAILS MODAL */}
         {folderDetails && (
           <ModalFolderDetails
             setFolderDetails={setFolderDetails}
+            fileCount={filesCount}
+            DirCount={foldersCount}
             createdAt={createdAt}
             updatedAt={updatedAt}
             name={name}
             size={size}
-            path={path}
-            DirCount={DirCount}
-            fileCount={fileCount}
           />
         )}
       </div>
       <div
         key={_id}
         title={`Size: ${calSize(size)}`}
-        className={`bg-clr5 text-clr1 hover:border-clr5 hover:text-clr3 hover:bg-clr1 border-clr5 flex justify-between p-2 items-center shadow-md hover:shadow-lg border-2  font-bebas tracking-widest text-lg  duration-300`}
+        className={`bg-clr5 text-clr1 hover:border-clr5 hover:text-clr3 hover:bg-clr1 border-clr5 flex justify-between p-2 items-center shadow-md hover:shadow-lg border-2  font-emb font-bold tracking-widest   duration-300`}
       >
         <div className={`w-[80%] cursor-pointer `}>
           {rename ? (
@@ -142,10 +124,7 @@ export default function CompFolderItem({
                 onChange={(e) => setDirectoryName(e.target.value)}
                 autoFocus
               />
-              <button
-                onClick={() => renameFun({ _id, folderName: directoryName })}
-                className="text-lg cursor-pointer"
-              >
+              <button onClick={handleRenameFolder} className=" cursor-pointer">
                 <MdSave />
               </button>
             </div>
@@ -161,39 +140,42 @@ export default function CompFolderItem({
             </Link>
           )}
         </div>
-        {/* //* SETTING */}
+        {/* //* ==========>SETTING */}
         <div className="flex w-[30%] justify-between">
-          {/* //* INFO */}
+          {/* //* ==========>INFO */}
           <div className="flex gap-2 justify-between">
             <button
               onClick={() => setFolderDetails(true)}
-              className="flex gap-2 justify-between items-center w-full cursor-pointer  text-xl"
+              className="flex gap-2 justify-between items-center w-full cursor-pointer  "
             >
               <MdOutlineInfo />
             </button>
           </div>
 
-          {/* //* RENAME */}
+          {/* //* ==========>RENAME */}
           <button
-            onClick={() => setRename((prev) => !prev)}
+            onClick={() => {
+              setRename((prev) => !prev);
+              setUserView(false);
+            }}
             className=" cursor-pointer"
           >
             {rename ? (
-              <h1 className="flex gap-2 justify-between items-center  text-xl">
+              <h1 className="flex gap-2 justify-between items-center  ">
                 <GiCancel />
               </h1>
             ) : (
-              <h1 className="flex gap-2 justify-between items-center  text-xl">
+              <h1 className="flex gap-2 justify-between items-center  ">
                 <MdOutlineDriveFileRenameOutline />
               </h1>
             )}
           </button>
 
-          {/* //* DELETE */}
+          {/* //* ==========>DELETE */}
           <div className="flex gap-2 justify-between">
             <button
-              onClick={() => deleteFun({ _id })}
-              className="flex gap-2 justify-between items-center w-full cursor-pointer  text-xl"
+              onClick={handleDeleteFolder}
+              className="flex gap-2 justify-between items-center w-full cursor-pointer  "
             >
               <MdDelete />
             </button>

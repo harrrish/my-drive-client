@@ -1,13 +1,143 @@
-@import url("https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Lexend+Deca:wght@100..900&family=Staatliches&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
-
 @import "tailwindcss";
 
+/** Ember */
+@font-face {
+  font-family: "Ember";
+  src: url("./Fonts/AmazonEmber_Th.ttf");
+  font-weight: 100;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Ember";
+  src: url("./Fonts/AmazonEmber_Lt.ttf");
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Ember";
+  src: url("./Fonts/AmazonEmber_Rg.ttf");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Ember";
+  src: url("./Fonts/AmazonEmber_Bd.ttf");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Ember";
+  src: url("./Fonts/AmazonEmber_He.ttf");
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Ember";
+  src: url("./Fonts/AmazonEmber_ThIt.ttf");
+  font-weight: 100;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Ember";
+  src: url("./Fonts/AmazonEmber_LtIt.ttf");
+  font-weight: 300;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Ember";
+  src: url("./Fonts/AmazonEmber_RgIt.ttf");
+  font-weight: 400;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Ember";
+  src: url("./Fonts/AmazonEmber_MdIt.ttf");
+  font-weight: 500;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Ember";
+  src: url("./Fonts/AmazonEmber_BdIt.ttf");
+  font-weight: 700;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Ember";
+  src: url("./Fonts/AmazonEmber_HeIt.ttf");
+  font-weight: 800;
+  font-style: italic;
+}
+
+/** Ember Display */
+@font-face {
+  font-family: "Ember Display";
+  src: url("./Fonts/AmazonEmberDisplay_Lt.ttf");
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Ember Display";
+  src: url("./Fonts/AmazonEmberDisplay_Rg.ttf");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Ember Display";
+  src: url("./Fonts/AmazonEmberDisplay_Md.ttf");
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Ember Display";
+  src: url("./Fonts/AmazonEmberDisplay_Bd.ttf");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Ember Display";
+  src: url("./Fonts/AmazonEmberDisplay_He.ttf");
+  font-weight: 800;
+  font-style: normal;
+}
+
+/** Bookerly Display */
+@font-face {
+  font-family: "Bookerly Display";
+  src: url("./Fonts/BookerlyDisplay_Rg.ttf");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Bookerly Display";
+  src: url("./Fonts/BookerlyDisplay_It.ttf");
+  font-weight: 400;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Bookerly Display";
+  src: url("./Fonts/BookerlyDisplay_Bd.ttf");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Bookerly Display";
+  src: url("./Fonts/BookerlyDisplay_BdIt.ttf");
+  font-weight: 700;
+  font-style: italic;
+}
+
 @theme {
-  --font-bebas: "Bebas Neue", sans-serif;
-  --font-urban: "Urbanist", sans-serif;
-  --font-anton: "Anton", sans-serif;
-  --font-staat: "Staatliches", sans-serif;
-  --font-lex: "Lexend Deca", sans-serif;
+  --font-emb: "Ember", system-ui, sans-serif;
+  --font-emb-con: "Ember Condensed", system-ui, sans-serif;
+  --font-emb-con-rc: "Ember Condensed RC", system-ui, sans-serif;
+  --font-emb-display: "Ember Display", system-ui, sans-serif;
+  --font-emb-mono: "Ember Mono", ui-monospace, monospace;
+  --font-emb-duospace: "Ember Duospace", ui-monospace, monospace;
+
+  --font-bookerly: "Bookerly", ui-serif, serif;
+  --font-bookerly-display: "Bookerly Display", ui-serif, serif;
+  --font-bookerly-lcd: "Bookerly LCD", ui-serif, serif;
 
   /* Define a single custom color */
   --color-clr1: #ffffff;
@@ -56,16 +186,13 @@
     }
   }
 }
-
 .custom-scrollbar::-webkit-scrollbar {
   width: 1px; /* Set scrollbar width */
   height: 5px;
 }
-
 .custom-scrollbar::-webkit-scrollbar-track {
   @apply bg-gray-100; /* Apply Tailwind background color to the track */
 }
-
 .custom-scrollbar::-webkit-scrollbar-thumb {
   @apply bg-black; /* Apply Tailwind background color and border-radius to the thumb */
 }

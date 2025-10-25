@@ -1,31 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
 import CompRegisterNav from "../components/CompRegisterNav";
-import CompError from "../components/CompError";
 import CompGoogleBtn from "../components/CompGoogleBtn";
 import CompRegisterToLogin from "../components/CompRegisterToLogin";
-import {
-  requestOTPFun,
-  verifyOTPFun,
-  userRegSubFun,
-} from "../utils/UserQueryFunctions";
+import { axiosWithOutCreds } from "../utils/AxiosInstance";
+import axios from "axios";
 
 export default function PageUserRegister() {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     name: "Alpha Kumar",
     email: "alpha@gmail.com",
     password: "Qwerty@12345",
     otp: "",
   });
-  const [otpBox, setOtpBox] = useState(false);
-  const [timer, setTimer] = useState(null);
-  const [registerBtn, setRegisterBtn] = useState(false);
-  const [send, setSend] = useState("Send OTP");
-
-  //* HANDLING FORM CHANGE
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -33,99 +21,122 @@ export default function PageUserRegister() {
       [name]: value,
     });
   };
+  const [requestOTP, setRequestOTP] = useState(false);
+  const [verifyOTP, setVerifyOTP] = useState(false);
+  const [enableRegister, setEnableRegister] = useState(false);
 
-  //* SENDING OTP
-  const {
-    mutate: requestOTP,
-    isPending: requestOTPPending,
-    error: requestOTPError,
-    reset: requestOTPReset,
-  } = useMutation({
-    mutationFn: requestOTPFun,
-    onError: (error) => {
-      console.log(error.message);
-    },
-    onSuccess: () => {
-      setOtpBox(true);
-      setTimer(180);
-      const otpInterval = setInterval(() => {
-        setTimer((prevTimer) => {
-          const newTimer = prevTimer - 1;
-          if (newTimer <= 0) {
-            clearInterval(otpInterval);
-            verifyOTPReset();
-            setOtpBox(false);
-            setSend("Resend OTP");
-            return 0;
-          }
-          return newTimer;
-        });
-      }, 1000);
-    },
-  });
+  const [error, setError] = useState("");
+  const [update, setUpdate] = useState("");
 
-  //* VERIFYING OTP
-  const {
-    mutate: verifyOTP,
-    isPending: verifyOTPPending,
-    error: verifyOTPError,
-    reset: verifyOTPReset,
-    isSuccess,
-  } = useMutation({
-    mutationFn: verifyOTPFun,
-    onError: (error) => {
-      console.log(error.message);
-    },
-    onSuccess: (data) => {
-      console.log(data);
-      setRegisterBtn(true);
-    },
-  });
+  const [timer, setTimer] = useState(null);
 
-  //* SUBMITTING FORM
-  const {
-    mutate: userRegSub,
-    isPending: userRegSubPen,
-    error: userRegSubErr,
-    reset: userRegSubReset,
-  } = useMutation({
-    mutationFn: userRegSubFun,
-    onError: (error) => {
-      console.log(error.message);
-      if (error.message === "OTP expired or Invalid OTP !") {
-        setRegisterBtn(false);
-        setOtpBox(false);
-        setTimeout(() => verifyOTPReset(), 3000);
+  //* ==========> REQUEST OTP
+  async function handleRequestOTP() {
+    const { email } = formData;
+    if (!email.trim()) {
+      setError("Invalid Email");
+      setTimeout(() => setError(""), 3000);
+    } else {
+      try {
+        const res = await axiosWithOutCreds.post("/auth/send-otp", { email });
+        if (res.status === 201) {
+          const { data } = res;
+          console.log(data.message);
+          setRequestOTP(true);
+          setVerifyOTP(true);
+        }
+      } catch (error) {
+        const errorMsg = axios.isAxiosError(error)
+          ? error.response?.data?.error || "OTP fetching failed"
+          : "Something went wrong!";
+        setError(errorMsg);
+        setTimeout(() => setError(""), 3000);
       }
-    },
-    onSuccess: (data) => {
-      navigate("/login");
-      console.log(data);
-    },
-  });
+    }
+  }
+
+  //* ==========> VERIFY OTP
+  async function handleVerifyOTP() {
+    const { email, otp } = formData;
+    if (!email.trim() || !otp.trim()) {
+      setError("Invalid Email or OTP !");
+      setTimeout(() => setError(""), 3000);
+    } else {
+      try {
+        // console.log(formData.email, formData.otp);
+        const res = await axiosWithOutCreds.post("/auth/verify-otp", {
+          email,
+          otp,
+        });
+        if (res.status === 200) {
+          const { data } = res;
+          console.log(data.message);
+          setUpdate(data.message);
+          setTimeout(() => setUpdate(""), 3000);
+          setVerifyOTP(false);
+          setEnableRegister(true);
+        }
+      } catch (error) {
+        const errorMsg = axios.isAxiosError(error)
+          ? error.response?.data?.error || "OTP verification failed!"
+          : "Something went wrong!";
+        setError(errorMsg);
+        setTimeout(() => setError(""), 3000);
+      }
+    }
+  }
+
+  //* ==========> REGISTER USER
+  async function handleRegister() {
+    const { name, email, password, otp } = formData;
+    if (!name.trim() || !email.trim() || !password.trim() || !otp.trim()) {
+      setEnableRegister(false);
+      setError("Invalid Credentials");
+      setTimeout(() => setError(""), 3000);
+    } else {
+      try {
+        const { data } = await axiosWithOutCreds.post(
+          "/user/register",
+          formData
+        );
+        console.log(data.message);
+        navigate("/login");
+      } catch (error) {
+        const errorMsg = axios.isAxiosError(error)
+          ? error.response?.data?.error || "User registration failed!"
+          : "Something went wrong!";
+        setRequestOTP(false);
+        setError(errorMsg);
+        setTimeout(() => setError(""), 3000);
+      }
+    }
+  }
 
   useEffect(() => {
-    if (requestOTPError) setTimeout(() => requestOTPReset(), 3000);
-    if (verifyOTPError) setTimeout(() => verifyOTPReset(), 3000);
-    if (userRegSubErr) setTimeout(() => userRegSubReset(), 3000);
-  }, [
-    requestOTPError,
-    requestOTPReset,
-    verifyOTPError,
-    verifyOTPReset,
-    userRegSubErr,
-    userRegSubReset,
-  ]);
+    if (!verifyOTP) return;
+    setTimer(60);
+    const interval = setInterval(() => {
+      setTimer((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setVerifyOTP(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, [verifyOTP]);
 
   return (
     <div className="bg-gray-200 min-h-[100vh] flex justify-center items-center font-body">
       <div className="w-[90%] sm:max-w-md mx-auto p-6 shadow-lg flex flex-col gap-4 rounded-sm bg-clr1">
+        {/* //* ==========>NAVBAR */}
         <CompRegisterNav />
 
-        <div className="flex flex-col gap-4 font-lex tracking-wide">
-          {/* //* FULL NAME */}
+        <div className="flex flex-col gap-4 font-emb-display font-bold">
+          {/* //* ==========>FULL NAME */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="name" className="block text-sm">
+            <label htmlFor="name" className="block ">
               Full Name
             </label>
             <input
@@ -138,9 +149,9 @@ export default function PageUserRegister() {
               className={`w-full px-3 py-2 border  shadow-sm focus:outline-blue-400`}
             />
           </div>
-          {/* //* EMAIL */}
-          <div className="flex flex-col gap-1">
-            <label htmlFor="email" className="text-sm">
+          {/* //* ==========>EMAIL */}
+          <div className="flex flex-col gap-1 items-start">
+            <label htmlFor="email" className="">
               Email
             </label>
             <input
@@ -152,17 +163,18 @@ export default function PageUserRegister() {
               onChange={handleChange}
               className={`w-full px-3 py-2 border  shadow-sm focus:outline-blue-400`}
             />
-            {/* //* SENT OTP */}
-            {!otpBox && (
+            {!requestOTP && (
               <button
-                onClick={() => requestOTP(formData.email)}
-                className="text-sm w-fit hover:underline cursor-pointer"
+                onClick={handleRequestOTP}
+                disabled={verifyOTP}
+                className=" hover:underline cursor-pointer disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:decoration-0"
               >
-                {requestOTPPending ? "Sending..." : send}
+                Request OTP
               </button>
             )}
-            <div className="">
-              {otpBox && (
+            {/* //* ==========>Request OTP */}
+            {verifyOTP && (
+              <div className="w-full">
                 <div>
                   <input
                     type="otp"
@@ -173,27 +185,23 @@ export default function PageUserRegister() {
                     placeholder="****"
                     className={`w-full px-3 py-2 border  shadow-sm focus:outline-blue-400`}
                   />
-                  {/* //* VERIFY OTP */}
-                  <div className="flex justify-between my-1">
+                  {/* //* ==========>VERIFY OTP */}
+                  <div className="flex justify-between w-full">
                     <button
-                      onClick={() => verifyOTP(formData)}
-                      disabled={isSuccess}
-                      className="text-sm w-fit hover:underline cursor-pointer disabled:text-gray-400 disabled:cursor-not-allowed"
+                      onClick={handleVerifyOTP}
+                      className=" hover:underline cursor-pointer disabled:text-gray-400 disabled:cursor-not-allowed "
                     >
-                      {isSuccess
-                        ? "OTP Verified !"
-                        : verifyOTPPending
-                        ? "Verifying..."
-                        : `Verify OTP (OTP valid for ${timer} seconds)`}
+                      Verify OTP
                     </button>
+                    <span>(OTP is valid for {timer} seconds)</span>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-          {/* //* PASSWORD */}
+          {/* //* ==========>PASSWORD */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="password" className="block text-sm">
+            <label htmlFor="password" className="block ">
               Password
             </label>
             <input
@@ -206,28 +214,35 @@ export default function PageUserRegister() {
               className={`w-full px-3 py-2 border  shadow-sm focus:outline-blue-400`}
             />
           </div>
-          {/* //* REGISTER BUTTON */}
+
+          {/* //* ==========>ERROR */}
+          {error && (
+            <h1 className="text-center bg-red-500 p-1 text-clr1">{error} !</h1>
+          )}
+          {/* //* ==========>UPDATE */}
+          {update && (
+            <h1 className="text-center bg-green-500 p-1 text-clr1">
+              {update} !
+            </h1>
+          )}
+
+          {/* //* ==========>REGISTER BUTTON */}
           <div>
             <button
               type="button"
-              onClick={() => userRegSub(formData)}
-              disabled={!registerBtn}
-              className={`w-full py-2 text-lg px-4 border font-bebas tracking-wider cursor-pointer shadow-sm bg-clr5 text-clr1 focus:outline-none disabled:bg-gray-400 disabled:cursor-not-allowed`}
+              onClick={handleRegister}
+              disabled={!enableRegister}
+              className={`w-full py-2  px-4 border font-emb-display font-bold tracking-wider cursor-pointer shadow-sm bg-clr5 text-clr1 focus:outline-none disabled:bg-gray-400 disabled:cursor-not-allowed`}
             >
-              {userRegSubPen ? "Registering..." : "Register"}
+              Register
             </button>
           </div>
         </div>
 
-        {requestOTPError && <CompError error={requestOTPError.message} />}
-        {verifyOTPError && <CompError error={verifyOTPError.message} />}
-        {userRegSubErr && <CompError error={userRegSubErr.message} />}
-
-        <div className="flex flex-col gap-2 items-center">
+        {/* //* ==========>FOOTER */}
+        <div className="font-emb flex flex-col gap-2 items-center">
           <CompRegisterToLogin />
-
           <h1 className="text-center">Or</h1>
-
           <CompGoogleBtn />
         </div>
       </div>

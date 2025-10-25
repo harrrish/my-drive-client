@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 
 export default function CompLoginToRegister() {
   return (
-    <p className="text-sm ">
+    <p className="font-emb">
       Do not have an account?{" "}
-      <Link to={"/register"} className="  text-clr4 hover:underline">
+      <Link to={"/register"} className=" text-clr4 hover:underline">
         Sign up
       </Link>
     </p>

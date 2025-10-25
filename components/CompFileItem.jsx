@@ -6,31 +6,30 @@ import { FaDownload } from "react-icons/fa6";
 import { MdOutlineDriveFileRenameOutline } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import { GiCancel } from "react-icons/gi";
-import { useMutation } from "@tanstack/react-query";
 import ModalFileDetails from "../modals/ModalFileDetails";
 import { calSize } from "../utils/CalculateFileSize";
-import { deleteFile, renameFile } from "../utils/FileQueryFunctions";
 import {
   ErrorContext,
   ErrorModalContext,
   UpdateContext,
-  UserViewContext,
+  UserSettingViewContext,
 } from "../utils/Contexts";
-import { handleFileErrResp } from "../utils/HandleFileError";
+import { axiosWithCreds } from "../utils/AxiosInstance";
+import axios from "axios";
 const baseURL = import.meta.env.VITE_BASE_URL;
 
 export default function CompFileItem({
+  _id,
   name,
   extension,
   size,
   createdAt,
   updatedAt,
+  parentFID,
   basename,
-  path,
-  folderId,
-  fetchDirectoryData,
+  handleDirectoryDetails,
+  handleUserStorageDetails,
   // tempUpload,
-  _id,
 }) {
   const navigate = useNavigate();
   const [rename, setRename] = useState(false);
@@ -41,72 +40,72 @@ export default function CompFileItem({
   const { setUpdate } = useContext(UpdateContext);
   const { setError } = useContext(ErrorContext);
   const { setErrorModal } = useContext(ErrorModalContext);
-  const { setUserView } = useContext(UserViewContext);
 
-  //* Rename File
-  const { mutate: renameFileFun } = useMutation({
-    mutationFn: renameFile,
-    onError: (error) => {
-      const { message, status } = error;
-      handleFileErrResp(
-        status,
-        message,
-        setError,
-        setErrorModal,
-        navigate,
-        setUpdate
-      );
-    },
-    onSuccess: (status) => {
-      if (status === 201) {
-        setUpdate(`File renamed from "${basename}" to "${itemName}" !`);
+  //* ==========>Rename File
+  async function handleFileRename() {
+    if (!itemName.trim()) {
+      setError("Please provide a valid file name");
+      setTimeout(() => setError(""), 3000);
+    } else {
+      try {
+        const { data, status } = await axiosWithCreds.patch(
+          `/file/${_id || ""}`,
+          {
+            newName: `${itemName}${extension}`,
+            basename: itemName,
+          }
+        );
+        console.log(data.message);
+        if (status === 201) {
+          handleDirectoryDetails(parentFID);
+          handleUserStorageDetails();
+          setRename(false);
+          setUpdate(data.message);
+          setTimeout(() => setUpdate(""), 3000);
+        }
+      } catch (error) {
+        console.log(error);
+        const errMsg = axios.isAxiosError(error)
+          ? error.response?.data?.error || "Failed to rename file"
+          : "Something went wrong";
+        setError(errMsg);
+        setTimeout(() => setError(""), 3000);
       }
-      setTimeout(() => {
-        setUpdate("");
-      }, 3000);
-      setRename(false);
-      fetchDirectoryData(folderId);
-    },
-  });
+    }
+  }
 
-  //* Delete File
-  const { mutate: deleteFileFun } = useMutation({
-    mutationFn: deleteFile,
-    onError: (error) => {
-      const { message, status } = error;
-      handleFileErrResp(
-        status,
-        message,
-        setError,
-        setErrorModal,
-        navigate,
-        setUpdate
+  async function handleFileDelete() {
+    try {
+      const { data, status } = await axiosWithCreds.delete(
+        `/file/${_id || ""}`
       );
-    },
-    onSuccess: (status) => {
-      setUserView(false);
+      console.log(data.message);
       if (status === 201) {
-        setUpdate(`File "${basename}" deleted !`);
+        handleDirectoryDetails(parentFID);
+        setRename(false);
+        setUpdate(data.message);
+        setTimeout(() => setUpdate(""), 3000);
       }
-      setTimeout(() => {
-        setUpdate("");
-      }, 3000);
-      setRename(false);
-      fetchDirectoryData(folderId);
-    },
-  });
+    } catch (error) {
+      console.log(error);
+      const errMsg = axios.isAxiosError(error)
+        ? error.response?.data?.error || "Failed to rename file"
+        : "Something went wrong";
+      setError(errMsg);
+      setTimeout(() => setError(""), 3000);
+    }
+  }
 
   return (
     <div>
       <div>
-        {/* //* FILE DETAILS MODAL */}
+        {/* //* ==========>FILE DETAILS MODAL */}
         {fileDetails && (
           <ModalFileDetails
             setFileDetails={setFileDetails}
             name={name}
             size={size}
             extension={extension}
-            path={path.dirPath}
             createdAt={createdAt}
             updatedAt={updatedAt}
           />
@@ -117,7 +116,7 @@ export default function CompFileItem({
         title={`Name: ${name}\nSize: ${calSize(size)}\nCreated at: ${new Date(
           createdAt
         ).toLocaleString()}`}
-        className={`group flex justify-between border-2 font-urban font-semibold bg-clr4 text-clr1 hover:border-clr4 hover:text-clr3 hover:bg-clr1 border-clr4 p-2 items-center shadow-sm hover:shadow-md duration-300`}
+        className={`group flex justify-between border-2 font-emb font-bold bg-clr4 text-clr1 hover:border-clr4 hover:text-clr3 hover:bg-clr1 border-clr4 p-2 items-center shadow-sm hover:shadow-md duration-300`}
       >
         <div className={`w-[80%] cursor-pointer items-start`}>
           {rename ? (
@@ -126,15 +125,12 @@ export default function CompFileItem({
                 <CompFileIcon ext={extension} />
               </span>
               <input
-                className="border-1 w-3/4 px-2 py-1 outline-none text-sm"
+                className="border-1 w-3/4 px-2 py-1 outline-none "
                 value={itemName}
                 onChange={(e) => setItemName(e.target.value)}
                 autoFocus
               />
-              <button
-                onClick={() => renameFileFun({ _id, itemName, extension })}
-                className="text-xl cursor-pointer"
-              >
+              <button onClick={handleFileRename} className=" cursor-pointer">
                 <MdSave />
               </button>
             </div>
@@ -160,9 +156,9 @@ export default function CompFileItem({
           )}
         </div>
 
-        {/* //* SETTING */}
+        {/* //* ==========>SETTING */}
         <div className="flex w-[50%] justify-between">
-          {/* //* VIEW FILE DETAILS  */}
+          {/* //* ==========>VIEW FILE DETAILS  */}
           <div className="flex gap-2 justify-between">
             <button
               onClick={() => setFileDetails(true)}
@@ -172,7 +168,7 @@ export default function CompFileItem({
             </button>
           </div>
 
-          {/* //* DOWNLOAD  */}
+          {/* //* ==========>DOWNLOAD  */}
           <a
             href={`${baseURL}/file/${_id}?action=download`}
             className="cursor-pointer"
@@ -180,7 +176,7 @@ export default function CompFileItem({
             <FaDownload />
           </a>
 
-          {/* //* RENAME */}
+          {/* //* ==========>RENAME */}
           <button
             onClick={() => setRename((prev) => !prev)}
             className="cursor-pointer"
@@ -188,11 +184,8 @@ export default function CompFileItem({
             {rename ? <GiCancel /> : <MdOutlineDriveFileRenameOutline />}
           </button>
 
-          {/* //* DELETE */}
-          <button
-            onClick={() => deleteFileFun({ _id })}
-            className="cursor-pointer"
-          >
+          {/* //* ==========>DELETE */}
+          <button onClick={handleFileDelete} className="cursor-pointer">
             <MdDelete />
           </button>
         </div>

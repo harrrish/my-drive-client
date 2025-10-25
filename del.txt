@@ -1,0 +1,106 @@
+<div className="min-h-[100vh] bg-gray-200 border-3 relative overflow-hidden">
+  {/* //* ==========>UPDATE AND ERROR MODALS */}
+  <CompUpdateError />
+
+  {/* //* ==========>CREATE FOLDER MODAL */}
+  <div>
+    {showCreateFolder && (
+      <ModalCreateFolder
+        setCreateFolder={setCreateFolder}
+        folderID={folderID}
+        fetchDirectoryData={fetchDirectoryData}
+      />
+    )}
+    {errorModal && <ModalUserSessionErr />}
+  </div>
+
+  {/* //* ==========>MAIN CONTENT */}
+  <div className="flex flex-col gap-2">
+    {/* //* ==========>NAVBAR */}
+    <CompNavbar />
+
+    {/*//* ==========>Folder Path} */}
+    <CompFolderPath />
+
+    {/* //* ==========>CREATE FOLDER || UPLOAD FILE */}
+    <CompUploadSection
+      setCreateFolder={setCreateFolder}
+      handleFileSelect={handleFileSelect}
+    />
+
+    {/* //* ==========>SEARCH SECTION */}
+    <CompSearchSort />
+
+    {/* //* ==========>LOADING, EMPTY FOLDER, FOLDERS & FILES */}
+    {loading ? (
+      <CompLoadingShimmer />
+    ) : foldersCount === 0 && filesCount === 0 && tempUpload === false ? (
+      <div className="w-[95%] sm:max-w-3xl mx-auto">
+        <CompFoldersFiles foldersCount={foldersCount} filesCount={filesCount} />
+        <CompEmptyFolder />
+      </div>
+    ) : (
+      <div className="flex flex-col w-[95%] sm:max-w-3xl mx-auto">
+        <CompFoldersFiles foldersCount={foldersCount} filesCount={filesCount} />
+        <div className="p-2">
+          {/* //* ==========>DISPLAY FOLDERS  */}
+          <div id="list" className="flex flex-col w-full mx-auto gap-2">
+            {directoryDetails.folders.map((directory) => {
+              return (
+                <CompFolderItem
+                  key={directory._id}
+                  {...directory}
+                  folderID={folderID}
+                  fetchDirectoryData={fetchDirectoryData}
+                  DirCount={setFoldersList.length}
+                  fileCount={filesList.length}
+                >
+                  {directory.name}
+                </CompFolderItem>
+              );
+            })}
+          </div>
+        </div>
+        <div className="p-2">
+          {/* //* ==========>DISPLAY FILES   */}
+          <div id="list" className={`flex flex-col w-full mx-auto gap-2`}>
+            {directoryDetails.files.map((listItem) => (
+              <CompFileItem
+                key={listItem._id}
+                {...listItem}
+                folderID={folderID}
+                fetchDirectoryData={fetchDirectoryData}
+              />
+            ))}
+          </div>
+          <div>
+            {tempUpload && uploadFile && (
+              <div className="bg-clr4 text-clr1 mt-2 b p-2 flex flex-col gap-2 font-emb shadow-2xl font-medium tracking-wide">
+                <div className="flex justify-between">
+                  <h1>{uploadFile.name}</h1>
+                  <h1>{calSize(uploadFile.size)}</h1>
+                  <h1>Upload Progress: {uploadPrg}%</h1>
+                </div>
+                <div className="flex items-center">
+                  <div className="p-[2px] bg-clr3 w-[90%] mx-auto">
+                    <div
+                      className="p-[1px] bg-clr1"
+                      style={{ width: `${uploadPrg}%` }}
+                    ></div>
+                  </div>
+                  <button
+                    className=" cursor-pointer"
+                    title="Cancel upload"
+                    onClick={() => handleCancelUpload(uploadFile.id)}
+                  >
+                    <MdCancel />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</div>;

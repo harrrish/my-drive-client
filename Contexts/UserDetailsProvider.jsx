@@ -6,8 +6,6 @@ export function UserDetailsProvider({ children }) {
     name: "",
     email: "",
     picture: "",
-    usedStorageInBytes: "",
-    maxStorageInBytes: "",
   });
 
   return (

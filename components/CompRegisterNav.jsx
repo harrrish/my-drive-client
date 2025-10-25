@@ -1,10 +1,8 @@
-import React from "react";
-
 export default function CompRegisterNav() {
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-5xl font-bebas tracking-wide text-clr7">My Drive</h2>
-      <h2 className="text-3xl font-bebas tracking-wide text-clr4">
+    <div className="flex flex-col gap-2">
+      <h2 className=" font-bookerly-display text-3xl font-bold">My Drive</h2>
+      <h2 className=" font-bookerly-display text-2xl font-bold">
         Create an account !
       </h2>
     </div>

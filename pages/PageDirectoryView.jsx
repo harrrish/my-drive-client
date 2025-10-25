@@ -5,51 +5,48 @@ import { useNavigate, useParams } from "react-router-dom";
 import CompFileItem from "../components/CompFileItem";
 import CompFolderItem from "../components/CompFolderItem";
 import CompNavbar from "../components/CompNavbar";
-import ModalCreateFolder from "../modals/ModalCreateFolder";
-import CompUploadSection from "../components/CompUploadSection.jsx";
-import CompSearchSort from "../components/CompSearchSort.jsx";
-import CompFolderPath from "../components/CompFolderPath.jsx";
-import CompLoadingShimmer from "../components/CompLoadingShimmer.jsx";
-import CompEmptyFolder from "../components/CompEmptyFolder.jsx";
-import CompFoldersFiles from "../components/CompFoldersFiles.jsx";
-import { getDirectoryItems } from "../utils/DirQueryFunctions";
 import { calSize } from "../utils/CalculateFileSize.js";
 import {
+  DirectoryContext,
   ErrorContext,
   ErrorModalContext,
-  FileCountContext,
-  FilesContext,
-  FolderCountContext,
-  FoldersContext,
-  PathContext,
+  FolderIDContext,
   UpdateContext,
-  UserDetailsContext,
-  UserViewContext,
+  UserSettingViewContext,
+  UserStorageContext,
 } from "../utils/Contexts.js";
-import { MdCancel } from "react-icons/md";
+import { MdCancel, MdGridView } from "react-icons/md";
 import { uploadComplete, uploadInitiate } from "../utils/FileQueryFunctions.js";
-import { handleErrResp } from "../utils/HandleDirError.js";
-import ModalUserSessionErr from "../modals/ModalUserSessionErr.jsx";
 import { axiosWithCreds } from "../utils/AxiosInstance.js";
-import CompUpdateError from "../components/CompUpdateError.jsx";
+import ModalsDiv from "../modals/ModalsDiv.jsx";
+import { TiFolderAdd } from "react-icons/ti";
+import { FaFileUpload, FaSearch, FaSortAmountDown } from "react-icons/fa";
+import { LuFiles } from "react-icons/lu";
+import { FaGoogleDrive, FaList } from "react-icons/fa6";
+import { IoMdArrowDropright } from "react-icons/io";
+import { RiFoldersFill } from "react-icons/ri";
 
 export default function PageDirectoryView() {
-  const { folderId } = useParams();
+  const { dirID } = useParams();
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [showCreateFolder, setCreateFolder] = useState(false);
 
-  const { errorModal, setErrorModal } = useContext(ErrorModalContext);
+  const { folderID, setFolderID } = useContext(FolderIDContext);
+
+  const { setErrorModal } = useContext(ErrorModalContext);
+
   const { setError } = useContext(ErrorContext);
-  const { filesCount, setFilesCount } = useContext(FileCountContext);
-  const { filesList, setFilesList } = useContext(FilesContext);
-  const { foldersCount, setFoldersCount } = useContext(FolderCountContext);
-  const { foldersList, setFoldersList } = useContext(FoldersContext);
-  const { setPath } = useContext(PathContext);
-  const { setUserDetails } = useContext(UserDetailsContext);
   const { setUpdate } = useContext(UpdateContext);
-  const { userView, setUserView } = useContext(UserViewContext);
+
+  const { setUserStorage } = useContext(UserStorageContext);
+
+  const { directoryDetails, setDirectoryDetails } =
+    useContext(DirectoryContext);
+
+  const { setUserView } = useContext(UserSettingViewContext);
+  // const { listView, setListView } = useContext(ListViewContext);
 
   const [uploadFile, setUploadFile] = useState(null);
   const [tempUpload, setTempUpload] = useState(false);
@@ -57,73 +54,53 @@ export default function PageDirectoryView() {
 
   const xhrRef = useRef(null);
 
-  //* Getting User Details
-  const getUserDetails = useCallback(async () => {
+  //* ==========> FETCHING USER STORAGE DETAILS
+  const handleUserStorageDetails = useCallback(async () => {
     try {
-      const { data } = await axiosWithCreds.get(`/user/profile`, {
+      const { data } = await axiosWithCreds.get(`/user/storage-details`, {
         withCredentials: true,
       });
-      setUserDetails({ ...data });
-    } catch (error) {
-      const { status, message } = error;
-      handleErrResp(
-        status,
-        message,
-        setError,
-        setErrorModal,
-        navigate,
-        setUpdate
-      );
+      setUserStorage((prev) => ({
+        ...prev, // ✅ proper object spread syntax
+        size: data?.size || 0,
+        maxStorageInBytes: data?.maxStorageInBytes || 0,
+      }));
+    } catch (err) {
+      console.error("Failed to fetch user storage:", err);
     }
-  }, [setUserDetails, navigate, setError, setErrorModal, setUpdate]);
+  }, [setUserStorage]);
 
-  //* Fetching directory items
-  const fetchDirectoryData = useCallback(async () => {
-    try {
-      const { data, status } = await getDirectoryItems(folderId);
-      if (status === 200 || status === 201) {
-        setErrorModal(false);
-        const { directories, files, filesCount, foldersCount, path } = data;
-        setLoading(false);
-        setFilesCount(filesCount);
-        setFilesList(files || []);
-        setFoldersCount(foldersCount);
-        setFoldersList(directories || []);
-        setPath(path);
+  //* ==========> FETCHING DIRECTORY DETAILS
+  const handleDirectoryDetails = useCallback(
+    async (dirID) => {
+      try {
+        const { data } = await axiosWithCreds.get(`/directory/${dirID || ""}`);
+        // console.log(data);
+        setDirectoryDetails({ ...data });
+        handleUserStorageDetails();
+      } catch (error) {
+        const errMsg = axios.isAxiosError(error)
+          ? error.response?.data?.error || "Failed to create folder"
+          : "Something went wrong";
+        console.log(error.status, errMsg);
+        if (error.status === 401 && errMsg === "Expired or Invalid Session")
+          setErrorModal(true);
+        else {
+          setError(errMsg);
+          setTimeout(() => setError(""), 3000);
+        }
       }
-    } catch (error) {
-      const { status, message } = error;
-      handleErrResp(
-        status,
-        message,
-        setError,
-        setErrorModal,
-        navigate,
-        setUpdate
-      );
-    }
-  }, [
-    folderId,
-    navigate,
-    setFilesCount,
-    setFilesList,
-    setFoldersCount,
-    setFoldersList,
-    setError,
-    setErrorModal,
-    setUpdate,
-    setPath,
-  ]);
-
-  //* Handling file select and getting upload URL
+    },
+    [setDirectoryDetails, setErrorModal, setError, handleUserStorageDetails]
+  );
+  //* ==========>Handling file select and getting upload URL
   async function handleFileSelect(event) {
-    setUserView(false);
-    //* SELECTING THE FILE
+    //* ==========>SELECTING THE FILE
     const file = event.target.files?.[0];
     if (!file) return;
     // console.log(file);
 
-    //* STOPPING A NEW UPLOAD
+    //* ==========>STOPPING A NEW UPLOAD
     if (uploadFile?.isUploading) {
       console.log(event.target.file);
       setError("An upload is already in progress. Please wait !");
@@ -134,7 +111,7 @@ export default function PageDirectoryView() {
       return;
     }
 
-    //* CREATING A TEMP FILE & PREPARING THE FILE TO BE UPLOADED
+    //* ==========>CREATING A TEMP FILE & PREPARING THE FILE TO BE UPLOADED
     const tempItem = {
       file,
       name: file.name,
@@ -146,20 +123,20 @@ export default function PageDirectoryView() {
     setUploadFile(tempItem);
     setTempUpload(true);
 
-    //* VIEWING THE PREPARED FILE
+    //* ==========>VIEWING THE PREPARED FILE
     // console.log({ uploadFile });
 
     try {
-      //* INITIATING FILE UPLOAD (GETTING UPLOAD URL)
+      //* ==========>INITIATING FILE UPLOAD (GETTING UPLOAD URL)
       const { data } = await uploadInitiate({
         name: file.name,
         size: file.size,
         contentType: file.type,
-        folderId,
+        folderID: dirID,
       });
       const { uploadSignedUrl, fileID } = data;
       // console.log(fileID);
-      //* STARTING FILE UPLOAD
+      //* ==========>STARTING FILE UPLOAD
       startUpload(tempItem, uploadSignedUrl, fileID);
       event.target.value = "";
     } catch (error) {
@@ -173,7 +150,7 @@ export default function PageDirectoryView() {
       event.target.value = "";
     }
   }
-  //* Upload File along with Handling cancel
+  //* ==========>Upload File along with Handling cancel
   function startUpload(item, uploadUrl, fileID) {
     const { file, type, name, size } = item;
 
@@ -182,12 +159,12 @@ export default function PageDirectoryView() {
 
     const contentType =
       type || mime.getType(name) || "application/octet-stream";
-    //* "application/octet-stream" → generic MIME type for "binary data".
+    //* ==========>"application/octet-stream" → generic MIME type for "binary data".
 
     // console.log({ contentType });
     // console.log({ uploadUrl, file });
 
-    //* SENDING FILE TO S3 USING UPLOAD URL
+    //* ==========>SENDING FILE TO S3 USING UPLOAD URL
     axios
       .put(uploadUrl, file, {
         headers: { "Content-Type": contentType },
@@ -204,8 +181,8 @@ export default function PageDirectoryView() {
           await uploadComplete({ fileID, size: size });
         }
         resetUploadState();
-        fetchDirectoryData(folderId);
-        setUpdate(`File "${name} uploaded !"`);
+        handleDirectoryDetails(dirID);
+        setUpdate(`File "${name}" uploaded !`);
         console.log(`File uploaded`);
         setTimeout(() => {
           setUpdate("");
@@ -233,115 +210,212 @@ export default function PageDirectoryView() {
         }
         // setFilesList((prev) => prev.filter((f) => f.id !== id));
         resetUploadState();
-        fetchDirectoryData();
+        handleDirectoryDetails(dirID);
       });
   }
-  //* Handling File Upload Cancel
+  //* ==========>Handling File Upload Cancel
   function handleCancelUpload(tempId) {
     if (uploadFile?.id === tempId && xhrRef.current) {
       xhrRef.current.abort(); // cancel axios request
     }
     resetUploadState();
-    fetchDirectoryData();
+    handleDirectoryDetails();
   }
-  //* Resetting the upload state
+  //* ==========>Resetting the upload state
   function resetUploadState() {
     setUploadFile(null);
     setTempUpload(false);
     setUploadPrg(0);
   }
+
   useEffect(() => {
-    fetchDirectoryData(folderId);
-    if (userView) {
-      getUserDetails();
-    }
-  }, [folderId, fetchDirectoryData, getUserDetails, userView]);
+    handleDirectoryDetails(dirID);
+  }, [dirID, handleDirectoryDetails]);
 
   return (
     <div className="min-h-[100vh] bg-gray-200 border-3 relative overflow-hidden">
-      {/* //* UPDATE AND ERROR MODALS */}
-      <CompUpdateError />
-
-      {/* //* CREATE FOLDER MODAL */}
-      <div>
-        {showCreateFolder && (
-          <ModalCreateFolder
-            setCreateFolder={setCreateFolder}
-            folderId={folderId}
-            fetchDirectoryData={fetchDirectoryData}
-          />
-        )}
-        {errorModal && <ModalUserSessionErr />}
-      </div>
-
-      {/* //* MAIN CONTENT */}
+      {/* //* ==========> MODALS */}
+      <ModalsDiv
+        showCreateFolder={showCreateFolder}
+        setCreateFolder={setCreateFolder}
+        folderID={dirID}
+        handleDirectoryDetails={handleDirectoryDetails}
+      />
+      {/* //* ==========>MAIN CONTENT */}
       <div className="flex flex-col gap-2">
-        {/* //* NAVBAR */}
+        {/* //* ==========>NAVBAR */}
         <CompNavbar />
-
-        {/*//* Folder Path} */}
-        <CompFolderPath />
-
-        {/* //* CREATE FOLDER || UPLOAD FILE */}
-        <CompUploadSection
-          setCreateFolder={setCreateFolder}
-          handleFileSelect={handleFileSelect}
-        />
-
-        {/* //* SEARCH SECTION */}
-        <CompSearchSort />
-
-        {/* //* LOADING, EMPTY FOLDER, FOLDERS & FILES */}
-        {loading ? (
-          <CompLoadingShimmer />
-        ) : foldersCount === 0 && filesCount === 0 && tempUpload === false ? (
-          <div className="w-[95%] sm:max-w-3xl mx-auto">
-            <CompFoldersFiles
-              foldersCount={foldersCount}
-              filesCount={filesCount}
+        {/*//* ==========>Folder Path} */}
+        <div className="bg-clr7 w-[95%] sm:max-w-5xl mx-auto px-2 font-emb font-bold shadow-md hover:shadow-2xl duration-300 rounded-sm h-10 flex items-center overflow-x-auto cursor-grab select-none custom-scrollbar">
+          <div className="flex items-center whitespace-nowrap">
+            {directoryDetails.path.map((p, index) => (
+              <div key={p.id} className="flex items-center">
+                <button
+                  className="capitalize truncate max-w-[150px] hover:underline cursor-pointer select-none"
+                  onClick={() => navigate(`/directory/${p.id}`)}
+                  title={
+                    p.name.includes("root") ? p.name.split("-")[0] : p.name
+                  }
+                >
+                  {p.name.includes("root") ? p.name.split("-")[0] : p.name}
+                </button>
+                {index !== directoryDetails.path.length - 1 && (
+                  <span className=" flex-shrink-0">
+                    <IoMdArrowDropright />
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+        {/*//* ==========>Create Folder || Upload File} */}
+        {/*//* ==========>Search file/folder || Import from Drive} */}
+        {/*//* ==========>File and Folders Sort || Files and Folders Count} */}
+        <div className="flex flex-wrap sm:max-w-5xl w-[95%] gap-1 justify-between mx-auto">
+          {/* //* ==========>CREATE FOLDER */}
+          <button
+            className="hover:cursor-pointer duration-300 text-clr5 border-2 bg-clr1 shadow-md hover:shadow-2xl w-[48%] flex items-center justify-center gap-2 rounded-sm h-10 hover:bg-green-600 hover:text-clr1 font-emb font-bold"
+            title="Create folder"
+            onClick={() => setCreateFolder(true)}
+          >
+            <span className="">
+              <TiFolderAdd />
+            </span>
+            <span className="">Create Folder</span>
+          </button>
+          {/* //* ==========>FILE UPLOAD */}
+          <label
+            htmlFor="fileUpload"
+            className="hover:cursor-pointer duration-300 bg-clr1 text-sky-500 shadow-md hover:shadow-2xl w-[48%] flex items-center justify-center gap-2 rounded-sm h-10 border-2 hover:bg-sky-500 hover:text-clr1 font-emb font-bold"
+            title="Upload file"
+          >
+            <FaFileUpload className="" title="Upload file" />
+            <input
+              type="file"
+              onChange={(event) => handleFileSelect(event)}
+              className="hidden"
+              id="fileUpload"
             />
-            <CompEmptyFolder />
+            <span className="">Upload File</span>
+          </label>
+          {/* //* ==========>SEARCH SECTION */}
+          <div
+            className="hover:cursor-pointer duration-300 border-2 bg-clr1 shadow-md hover:shadow-2xl w-[48%] flex items-center justify-center rounded-sm h-10 font-emb font-bold p-1"
+            title="Create folder"
+          >
+            <input
+              type="text"
+              className="text-clr3 w-full text-center  outline-none h-full"
+              placeholder="Search for file/folder..."
+            />
+            <button
+              className=" hover:cursor-pointer duration-300 flex items-center justify-center h-full"
+              title="Search file"
+            >
+              <FaSearch />
+            </button>
+          </div>
+          {/* //* ==========>GOOGLE DRIVE */}
+          <button
+            className="hover:cursor-pointer duration-300 bg-clr1 shadow-md hover:shadow-2xl w-[48%] flex items-center justify-center gap-2 rounded-sm h-10 hover:bg-clr7 text-clr7 border-2 hover:text-clr1 font-emb font-bold"
+            title="Bin"
+          >
+            <span className="">
+              <FaGoogleDrive />
+            </span>
+            <span className="">Import from Drive</span>
+          </button>
+          {/* //* ==========>VIEW & SORT */}
+          <div className="flex items-center justify-between w-[48%] bg-clr1 gap-2 text-clr3 shadow-md hover:shadow-xl duration-300 h-10 rounded-sm font-emb font-bold border-2">
+            {/* //* ==========>VIEW CHANGE */}
+            <div className="w-1/2 flex justify-center gap-8">
+              <button className="cursor-pointer hover:scale-110">
+                <FaList />
+              </button>
+              <button className="cursor-pointer hover:scale-110">
+                <MdGridView />
+              </button>
+            </div>
+            {/* //* ==========>SORT */}
+            <div className="flex justify-start items-center w-1/2 gap-2">
+              <label htmlFor="sort" className="flex items-center gap-1 w-full">
+                <FaSortAmountDown className="" />
+                <select
+                  id="sort"
+                  name="sort"
+                  className="text-center outline-none cursor-pointer w-full h-full"
+                >
+                  <option value="size_inc">Size (Inc)</option>
+                  <option value="size_dec">Size (Dec)</option>
+                  <option value="name_asc">Name (Asc)</option>
+                  <option value="name_desc">Name (Desc)</option>
+                  <option value="last_modified_asc">Last Modified (Asc)</option>
+                  <option value="last_modified_desc">
+                    Last Modified (Desc)
+                  </option>
+                </select>
+              </label>
+            </div>
+          </div>
+          {/* //* ==========>FILES AND FOLDERS */}
+          <div className="w-[48%] bg-clr1 flex justify-between items-center p-1 rounded-sm h-10 font-emb font-bold text-sm border-2 border-clr7">
+            <h1 className="flex items-center gap-1 text-clr5">
+              <span className="">
+                <RiFoldersFill />
+              </span>
+              <span>Folders: {directoryDetails.foldersCount}</span>
+            </h1>
+            <h1 className="flex items-center gap-1 text-clr4">
+              <span className="">
+                <LuFiles />
+              </span>
+              Files: {directoryDetails.filesCount}
+            </h1>
+          </div>
+        </div>
+        {/* //* ==========>FOLDERS AND FILES  */}
+        {directoryDetails.foldersCount < 1 &&
+        directoryDetails.filesCount < 1 ? (
+          <div>
+            <h1 className="text-center font-bookerly-display text-2xl tracking-wide mt-4">
+              No files or folders found !
+            </h1>
           </div>
         ) : (
-          <div className="flex flex-col w-[95%] sm:max-w-3xl mx-auto">
-            <CompFoldersFiles
-              foldersCount={foldersCount}
-              filesCount={filesCount}
-            />
+          <div className="flex flex-col w-[95%] sm:max-w-5xl mx-auto">
             <div className="p-2">
-              {/* //* DISPLAY FOLDERS  */}
+              {/* //* ==========>DISPLAY FOLDERS */}
               <div id="list" className="flex flex-col w-full mx-auto gap-2">
-                {foldersList.map((directory) => {
+                {directoryDetails.folders.map((directory) => {
                   return (
                     <CompFolderItem
                       key={directory._id}
                       {...directory}
-                      folderId={folderId}
-                      fetchDirectoryData={fetchDirectoryData}
-                      DirCount={setFoldersList.length}
-                      fileCount={filesList.length}
-                    >
-                      {directory.name}
-                    </CompFolderItem>
+                      handleDirectoryDetails={handleDirectoryDetails}
+                      handleUserStorageDetails={handleUserStorageDetails}
+                    />
                   );
                 })}
               </div>
             </div>
             <div className="p-2">
-              {/* //* DISPLAY FILES   */}
+              {/* //* ==========>DISPLAY FILES */}
               <div id="list" className={`flex flex-col w-full mx-auto gap-2`}>
-                {filesList.map((listItem) => (
+                {directoryDetails.files.map((listItem) => (
                   <CompFileItem
                     key={listItem._id}
                     {...listItem}
-                    folderId={folderId}
-                    fetchDirectoryData={fetchDirectoryData}
+                    handleDirectoryDetails={handleDirectoryDetails}
+                    handleUserStorageDetails={handleUserStorageDetails}
                   />
                 ))}
               </div>
+            </div>
+            {/* //* ==========>UPLOADING FILE */}
+            <div className="p-2">
               <div>
                 {tempUpload && uploadFile && (
-                  <div className="bg-clr4 text-clr1 mt-2 b p-2 flex flex-col gap-2 font-urban shadow-2xl font-medium tracking-wide">
+                  <div className="bg-clr4 text-clr1 mt-2 b p-2 flex flex-col gap-2 font-emb shadow-2xl font-medium">
                     <div className="flex justify-between">
                       <h1>{uploadFile.name}</h1>
                       <h1>{calSize(uploadFile.size)}</h1>
@@ -355,7 +429,7 @@ export default function PageDirectoryView() {
                         ></div>
                       </div>
                       <button
-                        className="text-2xl cursor-pointer"
+                        className=" cursor-pointer"
                         title="Cancel upload"
                         onClick={() => handleCancelUpload(uploadFile.id)}
                       >

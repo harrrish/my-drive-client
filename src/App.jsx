@@ -3,31 +3,41 @@ import PageDirectoryView from "../pages/PageDirectoryView";
 import PageUserRegister from "../pages/PageUserRegister";
 import PageUserLogin from "../pages/PageUserLogin";
 import PageBin from "../pages/PageBin";
+import PageUserProfile from "../pages/PageUserProfile";
+import PagePurchasePremium from "../pages/PagePurchasePremium";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <PageUserLogin />,
+    element: <PageDirectoryView />,
   },
   {
-    path: "/login",
-    element: <PageUserLogin />,
+    path: "/directory",
+    element: <PageDirectoryView />,
+  },
+  {
+    path: "/directory/:dirID",
+    element: <PageDirectoryView />,
   },
   {
     path: "/register",
     element: <PageUserRegister />,
   },
   {
-    path: "/root",
-    element: <PageDirectoryView />,
+    path: "/login",
+    element: <PageUserLogin />,
+  },
+  {
+    path: "/profile",
+    element: <PageUserProfile />,
   },
   {
     path: "/bin",
     element: <PageBin />,
   },
   {
-    path: "/directory/:folderId",
-    element: <PageDirectoryView />,
+    path: "/purchase-premium",
+    element: <PagePurchasePremium />,
   },
 ]);
 
