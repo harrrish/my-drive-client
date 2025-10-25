@@ -1,9 +1,6 @@
 import { createContext } from "react";
 
 export const FolderIDContext = createContext();
-
-export const ErrorModalContext = createContext();
-
 export const ErrorContext = createContext();
 export const UpdateContext = createContext();
 

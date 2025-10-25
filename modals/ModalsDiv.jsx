@@ -1,11 +1,6 @@
 import { useContext } from "react";
-import {
-  ErrorContext,
-  ErrorModalContext,
-  UpdateContext,
-} from "../utils/Contexts";
+import { ErrorContext, UpdateContext } from "../utils/Contexts";
 import ModalCreateFolder from "./ModalCreateFolder";
-import ModalUserSessionErr from "./ModalUserSessionErr";
 
 export default function ModalsDiv({
   showCreateFolder,
@@ -16,7 +11,6 @@ export default function ModalsDiv({
 }) {
   const { error } = useContext(ErrorContext);
   const { update } = useContext(UpdateContext);
-  const { errorModal } = useContext(ErrorModalContext);
 
   return (
     <div>
@@ -30,7 +24,6 @@ export default function ModalsDiv({
           {error} !
         </h1>
       )}
-      {errorModal && <ModalUserSessionErr />}
       {showCreateFolder && (
         <ModalCreateFolder
           setCreateFolder={setCreateFolder}

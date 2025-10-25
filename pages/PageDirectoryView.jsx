@@ -9,10 +9,7 @@ import { calSize } from "../utils/CalculateFileSize.js";
 import {
   DirectoryContext,
   ErrorContext,
-  ErrorModalContext,
-  FolderIDContext,
   UpdateContext,
-  UserSettingViewContext,
   UserStorageContext,
 } from "../utils/Contexts.js";
 import { MdCancel, MdGridView } from "react-icons/md";
@@ -29,23 +26,12 @@ import { RiFoldersFill } from "react-icons/ri";
 export default function PageDirectoryView() {
   const { dirID } = useParams();
   const navigate = useNavigate();
-
-  // const [loading, setLoading] = useState(true);
   const [showCreateFolder, setCreateFolder] = useState(false);
-
-  const { folderID, setFolderID } = useContext(FolderIDContext);
-
-  const { setErrorModal } = useContext(ErrorModalContext);
-
   const { setError } = useContext(ErrorContext);
   const { setUpdate } = useContext(UpdateContext);
-
   const { setUserStorage } = useContext(UserStorageContext);
-
   const { directoryDetails, setDirectoryDetails } =
     useContext(DirectoryContext);
-
-  const { setUserView } = useContext(UserSettingViewContext);
   // const { listView, setListView } = useContext(ListViewContext);
 
   const [uploadFile, setUploadFile] = useState(null);
@@ -65,10 +51,18 @@ export default function PageDirectoryView() {
         size: data?.size || 0,
         maxStorageInBytes: data?.maxStorageInBytes || 0,
       }));
-    } catch (err) {
-      console.error("Failed to fetch user storage:", err);
+    } catch (error) {
+      const errorMsg = axios.isAxiosError(error)
+        ? error.response?.data?.error || "Failed to fetch storage details"
+        : "Something went wrong";
+      if (error.status === 401 && errorMsg === "Expired or Invalid Session")
+        navigate("/login");
+      else {
+        setError(errorMsg);
+        setTimeout(() => setError(""), 3000);
+      }
     }
-  }, [setUserStorage]);
+  }, [setUserStorage, navigate, setError]);
 
   //* ==========> FETCHING DIRECTORY DETAILS
   const handleDirectoryDetails = useCallback(
@@ -79,19 +73,18 @@ export default function PageDirectoryView() {
         setDirectoryDetails({ ...data });
         handleUserStorageDetails();
       } catch (error) {
-        const errMsg = axios.isAxiosError(error)
-          ? error.response?.data?.error || "Failed to create folder"
+        const errorMsg = axios.isAxiosError(error)
+          ? error.response?.data?.error || "Failed to fetch folder content"
           : "Something went wrong";
-        console.log(error.status, errMsg);
-        if (error.status === 401 && errMsg === "Expired or Invalid Session")
-          setErrorModal(true);
+        if (error.status === 401 && errorMsg === "Expired or Invalid Session")
+          navigate("/login");
         else {
-          setError(errMsg);
+          setError(errorMsg);
           setTimeout(() => setError(""), 3000);
         }
       }
     },
-    [setDirectoryDetails, setErrorModal, setError, handleUserStorageDetails]
+    [setDirectoryDetails, setError, handleUserStorageDetails, navigate]
   );
   //* ==========>Handling file select and getting upload URL
   async function handleFileSelect(event) {

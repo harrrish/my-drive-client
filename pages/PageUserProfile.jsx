@@ -1,5 +1,9 @@
 import React, { useCallback, useContext, useEffect } from "react";
-import { UserDetailsContext, UserStorageContext } from "../utils/Contexts";
+import {
+  ErrorContext,
+  UserDetailsContext,
+  UserStorageContext,
+} from "../utils/Contexts";
 import { calSize } from "../utils/CalculateFileSize";
 import { useNavigate } from "react-router-dom";
 import { baseURL } from "../src/main";
@@ -8,26 +12,53 @@ import { IoLogOut } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa6";
 import { FaHome } from "react-icons/fa";
 import { axiosWithCreds } from "../utils/AxiosInstance";
+import axios from "axios";
 
 export default function PageUserProfile() {
   const { userDetails, setUserDetails } = useContext(UserDetailsContext);
   const { userStorage, setUserStorage } = useContext(UserStorageContext);
   const navigate = useNavigate();
+  const { setError } = useContext(ErrorContext);
 
   //* ==========> FETCHING USER PROFILE DETAILS
   const handleUserProfileDetails = useCallback(async () => {
-    const { data } = await axiosWithCreds.get(`/user/profile`, {
-      withCredentials: true,
-    });
-    setUserDetails({ ...data });
-  }, [setUserDetails]);
+    try {
+      const { data } = await axiosWithCreds.get(`/user/profile`, {
+        withCredentials: true,
+      });
+      setUserDetails({ ...data });
+    } catch (error) {
+      const errorMsg = axios.isAxiosError(error)
+        ? error.response?.data?.error || "Failed to fetch user details"
+        : "Something went wrong";
+      if (error.status === 401 && errorMsg === "Expired or Invalid Session")
+        navigate("/login");
+      else {
+        setError(errorMsg);
+        setTimeout(() => setError(""), 3000);
+      }
+    }
+  }, [setUserDetails, navigate, setError]);
+
   //* ==========> FETCHING USER STORAGE DETAILS
   const handleUserStorageDetails = useCallback(async () => {
-    const { data } = await axiosWithCreds.get(`/user/storage-details`, {
-      withCredentials: true,
-    });
-    setUserStorage({ ...data });
-  }, [setUserStorage]);
+    try {
+      const { data } = await axiosWithCreds.get(`/user/storage-details`, {
+        withCredentials: true,
+      });
+      setUserStorage({ ...data });
+    } catch (error) {
+      const errorMsg = axios.isAxiosError(error)
+        ? error.response?.data?.error || "Failed to fetch storage details"
+        : "Something went wrong";
+      if (error.status === 401 && errorMsg === "Expired or Invalid Session")
+        navigate("/login");
+      else {
+        setError(errorMsg);
+        setTimeout(() => setError(""), 3000);
+      }
+    }
+  }, [setUserStorage, navigate, setError]);
 
   async function handleLogout() {
     const res = await fetch(`${baseURL}/user/logout`, {

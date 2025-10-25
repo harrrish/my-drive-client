@@ -5,7 +5,7 @@ import CompGoogleBtn from "../components/CompGoogleBtn";
 import CompLoginToRegister from "../components/CompLoginToRegister";
 import { axiosWithCreds } from "../utils/AxiosInstance";
 import axios from "axios";
-import { ErrorModalContext, UserSettingViewContext } from "../utils/Contexts";
+import { UserSettingViewContext } from "../utils/Contexts";
 
 export default function PageUserLogin() {
   const navigate = useNavigate();
@@ -23,7 +23,6 @@ export default function PageUserLogin() {
     });
   };
 
-  const { setErrorModal } = useContext(ErrorModalContext);
   const { setUserView } = useContext(UserSettingViewContext);
 
   async function handleLogin() {
@@ -35,15 +34,18 @@ export default function PageUserLogin() {
       try {
         const { data } = await axiosWithCreds.post("/user/login", formData);
         console.log(data.message);
-        setErrorModal(false);
         setUserView(false);
         navigate("/");
       } catch (error) {
         const errorMsg = axios.isAxiosError(error)
           ? error.response?.data?.error || "User login failed!"
           : "Something went wrong!";
-        setError(errorMsg);
-        setTimeout(() => setError(""), 3000);
+        if (error.status === 401 && errorMsg === "Expired or Invalid Session")
+          navigate("/login");
+        else {
+          setError(errorMsg);
+          setTimeout(() => setError(""), 3000);
+        }
       }
     }
   }

@@ -8,12 +8,7 @@ import { MdDelete } from "react-icons/md";
 import { GiCancel } from "react-icons/gi";
 import ModalFileDetails from "../modals/ModalFileDetails";
 import { calSize } from "../utils/CalculateFileSize";
-import {
-  ErrorContext,
-  ErrorModalContext,
-  UpdateContext,
-  UserSettingViewContext,
-} from "../utils/Contexts";
+import { ErrorContext, UpdateContext } from "../utils/Contexts";
 import { axiosWithCreds } from "../utils/AxiosInstance";
 import axios from "axios";
 const baseURL = import.meta.env.VITE_BASE_URL;
@@ -39,7 +34,6 @@ export default function CompFileItem({
 
   const { setUpdate } = useContext(UpdateContext);
   const { setError } = useContext(ErrorContext);
-  const { setErrorModal } = useContext(ErrorModalContext);
 
   //* ==========>Rename File
   async function handleFileRename() {
@@ -64,12 +58,15 @@ export default function CompFileItem({
           setTimeout(() => setUpdate(""), 3000);
         }
       } catch (error) {
-        console.log(error);
-        const errMsg = axios.isAxiosError(error)
+        const errorMsg = axios.isAxiosError(error)
           ? error.response?.data?.error || "Failed to rename file"
           : "Something went wrong";
-        setError(errMsg);
-        setTimeout(() => setError(""), 3000);
+        if (error.status === 401 && errorMsg === "Expired or Invalid Session")
+          navigate("/login");
+        else {
+          setError(errorMsg);
+          setTimeout(() => setError(""), 3000);
+        }
       }
     }
   }
@@ -87,12 +84,15 @@ export default function CompFileItem({
         setTimeout(() => setUpdate(""), 3000);
       }
     } catch (error) {
-      console.log(error);
-      const errMsg = axios.isAxiosError(error)
-        ? error.response?.data?.error || "Failed to rename file"
+      const errorMsg = axios.isAxiosError(error)
+        ? error.response?.data?.error || "Failed to delete file"
         : "Something went wrong";
-      setError(errMsg);
-      setTimeout(() => setError(""), 3000);
+      if (error.status === 401 && errorMsg === "Expired or Invalid Session")
+        navigate("/login");
+      else {
+        setError(errorMsg);
+        setTimeout(() => setError(""), 3000);
+      }
     }
   }
 

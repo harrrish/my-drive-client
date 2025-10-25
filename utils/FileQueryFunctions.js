@@ -11,12 +11,12 @@ export const uploadInitiate = async (fileData) => {
     );
     return { success: true, data, status };
   } catch (error) {
-    const errMsg = axios.isAxiosError(error)
+    const errorMsg = axios.isAxiosError(error)
       ? error.response?.data?.error || "Failed to upload file"
       : "Something went wrong";
     return {
       success: false,
-      message: errMsg,
+      message: errorMsg,
       status: error.response?.status || null,
     };
   }
@@ -34,12 +34,12 @@ export const uploadComplete = async ({ fileID, size }) => {
     );
     return { success: true, data, status };
   } catch (error) {
-    const errMsg = axios.isAxiosError(error)
+    const errorMsg = axios.isAxiosError(error)
       ? error.response?.data?.error || "Failed to upload file"
       : "Something went wrong";
     return {
       success: false,
-      message: errMsg,
+      message: errorMsg,
       status: error.response?.status || null,
     };
   }

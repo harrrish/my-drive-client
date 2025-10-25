@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { MdSave } from "react-icons/md";
 import { FaFolder } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MdDelete } from "react-icons/md";
 import { GiCancel } from "react-icons/gi";
 import { MdOutlineDriveFileRenameOutline } from "react-icons/md";
@@ -28,6 +28,7 @@ export default function CompFolderItem({
   _id,
   handleDirectoryDetails,
 }) {
+  const navigate = useNavigate();
   const { setFolderID } = useContext(FolderIDContext);
   const { setError } = useContext(ErrorContext);
   const { setUpdate } = useContext(UpdateContext);
@@ -57,13 +58,15 @@ export default function CompFolderItem({
         setUpdate(data.message);
         setTimeout(() => setUpdate(""), 3000);
       } catch (error) {
-        console.log(error);
-        const errMsg = axios.isAxiosError(error)
+        const errorMsg = axios.isAxiosError(error)
           ? error.response?.data?.error || "Failed to rename folder"
           : "Something went wrong";
-        console.log(errMsg);
-        setError(errMsg);
-        setTimeout(() => setError(""), 3000);
+        if (error.status === 401 && errorMsg === "Expired or Invalid Session")
+          navigate("/login");
+        else {
+          setError(errorMsg);
+          setTimeout(() => setError(""), 3000);
+        }
       }
     }
   }
@@ -81,13 +84,15 @@ export default function CompFolderItem({
       setUpdate(data.message);
       setTimeout(() => setUpdate(""), 3000);
     } catch (error) {
-      console.log(error);
-      const errMsg = axios.isAxiosError(error)
+      const errorMsg = axios.isAxiosError(error)
         ? error.response?.data?.error || "Failed to delete folder"
         : "Something went wrong";
-      console.log(errMsg);
-      setError(errMsg);
-      setTimeout(() => setError(""), 3000);
+      if (error.status === 401 && errorMsg === "Expired or Invalid Session")
+        navigate("/login");
+      else {
+        setError(errorMsg);
+        setTimeout(() => setError(""), 3000);
+      }
     }
   }
 
