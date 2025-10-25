@@ -96,7 +96,7 @@ export default function PageDirectoryView() {
     //* ==========>STOPPING A NEW UPLOAD
     if (uploadFile?.isUploading) {
       console.log(event.target.file);
-      setError("An upload is already in progress. Please wait !");
+      setError("An upload is already in progress. Please wait");
       setTimeout(() => {
         setError("");
         event.target.value = "";

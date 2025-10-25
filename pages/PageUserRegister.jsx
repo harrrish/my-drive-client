@@ -48,7 +48,7 @@ export default function PageUserRegister() {
       } catch (error) {
         const errorMsg = axios.isAxiosError(error)
           ? error.response?.data?.error || "OTP fetching failed"
-          : "Something went wrong!";
+          : "Something went wrong";
         setError(errorMsg);
         setTimeout(() => setError(""), 3000);
       }
@@ -59,7 +59,7 @@ export default function PageUserRegister() {
   async function handleVerifyOTP() {
     const { email, otp } = formData;
     if (!email.trim() || !otp.trim()) {
-      setError("Invalid Email or OTP !");
+      setError("Invalid Email or OTP");
       setTimeout(() => setError(""), 3000);
     } else {
       try {
@@ -78,8 +78,8 @@ export default function PageUserRegister() {
         }
       } catch (error) {
         const errorMsg = axios.isAxiosError(error)
-          ? error.response?.data?.error || "OTP verification failed!"
-          : "Something went wrong!";
+          ? error.response?.data?.error || "OTP verification failed"
+          : "Something went wrong";
         setError(errorMsg);
         setTimeout(() => setError(""), 3000);
       }
@@ -103,8 +103,8 @@ export default function PageUserRegister() {
         navigate("/login");
       } catch (error) {
         const errorMsg = axios.isAxiosError(error)
-          ? error.response?.data?.error || "User registration failed!"
-          : "Something went wrong!";
+          ? error.response?.data?.error || "User registration failed"
+          : "Something went wrong";
         setRequestOTP(false);
         setError(errorMsg);
         setTimeout(() => setError(""), 3000);

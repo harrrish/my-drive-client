@@ -38,8 +38,8 @@ export default function PageUserLogin() {
         navigate("/");
       } catch (error) {
         const errorMsg = axios.isAxiosError(error)
-          ? error.response?.data?.error || "User login failed!"
-          : "Something went wrong!";
+          ? error.response?.data?.error || "User login failed"
+          : "Something went wrong";
         if (error.status === 401 && errorMsg === "Expired or Invalid Session")
           navigate("/login");
         else {

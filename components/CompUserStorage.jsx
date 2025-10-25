@@ -20,7 +20,7 @@ export default function CompUserStorage() {
     });
     if (res.ok) {
       navigate("/login");
-      console.log("User logged OUT !");
+      console.log("User logged out");
     }
   }
 

@@ -68,7 +68,7 @@ export default function PageUserProfile() {
 
     if (res.ok) {
       navigate("/login");
-      console.log("User logged OUT !");
+      console.log("User logged out");
     }
   }
 
