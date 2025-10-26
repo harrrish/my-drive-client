@@ -1,21 +1,24 @@
-import mime from "mime";
-import axios from "axios";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CompFileItem from "../components/CompFileItem";
-import CompFolderItem from "../components/CompFolderItem";
-import CompNavbar from "../components/CompNavbar";
-import { calSize } from "../utils/CalculateFileSize.js";
+import axios from "axios";
+import mime from "mime";
+
 import {
   DirectoryContext,
   ErrorContext,
   UpdateContext,
   UserStorageContext,
 } from "../utils/Contexts.js";
-import { MdCancel, MdGridView } from "react-icons/md";
-import { uploadComplete, uploadInitiate } from "../utils/FileQueryFunctions.js";
-import { axiosWithCreds } from "../utils/AxiosInstance.js";
+import { axiosError, axiosWithCreds } from "../utils/AxiosInstance.js";
+import { calSize } from "../utils/CalculateFileSize.js";
+
+import CompNavbar from "../components/CompNavbar";
+import CompFileItem from "../components/CompFileItem";
+import CompFolderItem from "../components/CompFolderItem";
+
 import ModalsDiv from "../modals/ModalsDiv.jsx";
+
+import { MdCancel, MdGridView } from "react-icons/md";
 import { TiFolderAdd } from "react-icons/ti";
 import { FaFileUpload, FaSearch, FaSortAmountDown } from "react-icons/fa";
 import { LuFiles } from "react-icons/lu";
@@ -32,7 +35,6 @@ export default function PageDirectoryView() {
   const { setUserStorage } = useContext(UserStorageContext);
   const { directoryDetails, setDirectoryDetails } =
     useContext(DirectoryContext);
-  // const { listView, setListView } = useContext(ListViewContext);
 
   const [uploadFile, setUploadFile] = useState(null);
   const [tempUpload, setTempUpload] = useState(false);
@@ -52,15 +54,8 @@ export default function PageDirectoryView() {
         maxStorageInBytes: data?.maxStorageInBytes || 0,
       }));
     } catch (error) {
-      const errorMsg = axios.isAxiosError(error)
-        ? error.response?.data?.error || "Failed to fetch storage details"
-        : "Something went wrong";
-      if (error.status === 401 && errorMsg === "Expired or Invalid Session")
-        navigate("/login");
-      else {
-        setError(errorMsg);
-        setTimeout(() => setError(""), 3000);
-      }
+      const msg = "Failed to fetch storage info";
+      axiosError(error, navigate, setError, msg);
     }
   }, [setUserStorage, navigate, setError]);
 
@@ -73,15 +68,8 @@ export default function PageDirectoryView() {
         setDirectoryDetails({ ...data });
         handleUserStorageDetails();
       } catch (error) {
-        const errorMsg = axios.isAxiosError(error)
-          ? error.response?.data?.error || "Failed to fetch folder content"
-          : "Something went wrong";
-        if (error.status === 401 && errorMsg === "Expired or Invalid Session")
-          navigate("/login");
-        else {
-          setError(errorMsg);
-          setTimeout(() => setError(""), 3000);
-        }
+        const msg = "Failed to fetch folder content";
+        axiosError(error, navigate, setError, msg);
       }
     },
     [setDirectoryDetails, setError, handleUserStorageDetails, navigate]
@@ -121,12 +109,16 @@ export default function PageDirectoryView() {
 
     try {
       //* ==========>INITIATING FILE UPLOAD (GETTING UPLOAD URL)
-      const { data } = await uploadInitiate({
-        name: file.name,
-        size: file.size,
-        contentType: file.type,
-        folderID: dirID,
-      });
+      const { data, status } = await axiosWithCreds.post(
+        "/file/upload/initiate",
+        {
+          name: file.name,
+          size: file.size,
+          contentType: file.type,
+          folderID: dirID,
+        }
+      );
+      console.log(status);
       const { uploadSignedUrl, fileID } = data;
       // console.log(fileID);
       //* ==========>STARTING FILE UPLOAD
@@ -134,17 +126,14 @@ export default function PageDirectoryView() {
       event.target.value = "";
     } catch (error) {
       event.target.value = "";
-      console.log(error.message);
-      setError(error.message);
-      setTimeout(() => {
-        setError("");
-      }, 3000);
+      const msg = "Failed to initiate file upload";
+      axiosError(error, navigate, setError, msg);
     } finally {
       event.target.value = "";
     }
   }
   //* ==========>Upload File along with Handling cancel
-  function startUpload(item, uploadUrl, fileID) {
+  async function startUpload(item, uploadUrl, fileID) {
     const { file, type, name, size } = item;
 
     const controller = new AbortController();
@@ -158,8 +147,8 @@ export default function PageDirectoryView() {
     // console.log({ uploadUrl, file });
 
     //* ==========>SENDING FILE TO S3 USING UPLOAD URL
-    axios
-      .put(uploadUrl, file, {
+    try {
+      const res = await axios.put(uploadUrl, file, {
         headers: { "Content-Type": contentType },
         signal: controller.signal, // allows cancellation
         onUploadProgress: (evt) => {
@@ -168,52 +157,25 @@ export default function PageDirectoryView() {
             setUploadPrg(progress);
           }
         },
-      })
-      .then(async (res) => {
-        if (res.status === 200 || res.status === 201) {
-          await uploadComplete({ fileID, size: size });
-        }
+      });
+      if (res.status === 200 || res.status === 201) {
+        await axiosWithCreds.post("/file/upload/complete", {
+          fileID,
+          size,
+        });
         resetUploadState();
         handleDirectoryDetails(dirID);
         setUpdate(`File "${name}" uploaded !`);
-        console.log(`File uploaded`);
-        setTimeout(() => {
-          setUpdate("");
-        }, 3000);
-      })
-      .catch((error) => {
-        console.log({ error });
-        if (axios.isCancel(error)) {
-          setError("Upload canceled");
-          resetUploadState();
-          setTimeout(() => {
-            setError("");
-          }, 3000);
-        } else if (error.response?.status === 507) {
-          setError("File too large! Please select a smaller file.");
-          resetUploadState();
-          setTimeout(() => {
-            setError("");
-          }, 3000);
-        } else {
-          setError(error.message);
-          setTimeout(() => {
-            setError("");
-          }, 3000);
-        }
-        // setFilesList((prev) => prev.filter((f) => f.id !== id));
-        resetUploadState();
-        handleDirectoryDetails(dirID);
-      });
-  }
-  //* ==========>Handling File Upload Cancel
-  function handleCancelUpload(tempId) {
-    if (uploadFile?.id === tempId && xhrRef.current) {
-      xhrRef.current.abort(); // cancel axios request
+        setTimeout(() => setUpdate(""), 3000);
+      }
+    } catch (error) {
+      const msg = "Failed to upload file";
+      axiosError(error, navigate, setError, msg);
+      resetUploadState();
+      handleDirectoryDetails(dirID);
     }
-    resetUploadState();
-    handleDirectoryDetails();
   }
+
   //* ==========>Resetting the upload state
   function resetUploadState() {
     setUploadFile(null);
@@ -421,11 +383,7 @@ export default function PageDirectoryView() {
                           style={{ width: `${uploadPrg}%` }}
                         ></div>
                       </div>
-                      <button
-                        className=" cursor-pointer"
-                        title="Cancel upload"
-                        onClick={() => handleCancelUpload(uploadFile.id)}
-                      >
+                      <button className=" cursor-pointer" title="Cancel upload">
                         <MdCancel />
                       </button>
                     </div>

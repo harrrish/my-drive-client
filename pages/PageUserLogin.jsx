@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import CompLoginNav from "../components/CompLoginNav";
 import CompGoogleBtn from "../components/CompGoogleBtn";
 import CompLoginToRegister from "../components/CompLoginToRegister";
-import { axiosWithCreds } from "../utils/AxiosInstance";
+import { axiosError, axiosWithCreds } from "../utils/AxiosInstance";
 import axios from "axios";
 import { UserSettingViewContext } from "../utils/Contexts";
 
@@ -37,15 +37,8 @@ export default function PageUserLogin() {
         setUserView(false);
         navigate("/");
       } catch (error) {
-        const errorMsg = axios.isAxiosError(error)
-          ? error.response?.data?.error || "User login failed"
-          : "Something went wrong";
-        if (error.status === 401 && errorMsg === "Expired or Invalid Session")
-          navigate("/login");
-        else {
-          setError(errorMsg);
-          setTimeout(() => setError(""), 3000);
-        }
+        const msg = "Failed to login user";
+        axiosError(error, navigate, setError, msg);
       }
     }
   }

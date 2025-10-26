@@ -9,8 +9,7 @@ import { GiCancel } from "react-icons/gi";
 import ModalFileDetails from "../modals/ModalFileDetails";
 import { calSize } from "../utils/CalculateFileSize";
 import { ErrorContext, UpdateContext } from "../utils/Contexts";
-import { axiosWithCreds } from "../utils/AxiosInstance";
-import axios from "axios";
+import { axiosError, axiosWithCreds } from "../utils/AxiosInstance";
 const baseURL = import.meta.env.VITE_BASE_URL;
 
 export default function CompFileItem({
@@ -24,7 +23,6 @@ export default function CompFileItem({
   basename,
   handleDirectoryDetails,
   handleUserStorageDetails,
-  // tempUpload,
 }) {
   const navigate = useNavigate();
   const [rename, setRename] = useState(false);
@@ -58,15 +56,8 @@ export default function CompFileItem({
           setTimeout(() => setUpdate(""), 3000);
         }
       } catch (error) {
-        const errorMsg = axios.isAxiosError(error)
-          ? error.response?.data?.error || "Failed to rename file"
-          : "Something went wrong";
-        if (error.status === 401 && errorMsg === "Expired or Invalid Session")
-          navigate("/login");
-        else {
-          setError(errorMsg);
-          setTimeout(() => setError(""), 3000);
-        }
+        const msg = "Failed to rename file";
+        axiosError(error, navigate, setError, msg);
       }
     }
   }
@@ -84,15 +75,8 @@ export default function CompFileItem({
         setTimeout(() => setUpdate(""), 3000);
       }
     } catch (error) {
-      const errorMsg = axios.isAxiosError(error)
-        ? error.response?.data?.error || "Failed to delete file"
-        : "Something went wrong";
-      if (error.status === 401 && errorMsg === "Expired or Invalid Session")
-        navigate("/login");
-      else {
-        setError(errorMsg);
-        setTimeout(() => setError(""), 3000);
-      }
+      const msg = "Failed to delete file";
+      axiosError(error, navigate, setError, msg);
     }
   }
 

@@ -11,7 +11,7 @@ import { BiSolidPurchaseTag } from "react-icons/bi";
 import { IoLogOut } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa6";
 import { FaHome } from "react-icons/fa";
-import { axiosWithCreds } from "../utils/AxiosInstance";
+import { axiosError, axiosWithCreds } from "../utils/AxiosInstance";
 import axios from "axios";
 
 export default function PageUserProfile() {
@@ -28,15 +28,8 @@ export default function PageUserProfile() {
       });
       setUserDetails({ ...data });
     } catch (error) {
-      const errorMsg = axios.isAxiosError(error)
-        ? error.response?.data?.error || "Failed to fetch user details"
-        : "Something went wrong";
-      if (error.status === 401 && errorMsg === "Expired or Invalid Session")
-        navigate("/login");
-      else {
-        setError(errorMsg);
-        setTimeout(() => setError(""), 3000);
-      }
+      const msg = "Failed to fetch user info";
+      axiosError(error, navigate, setError, msg);
     }
   }, [setUserDetails, navigate, setError]);
 
@@ -48,15 +41,8 @@ export default function PageUserProfile() {
       });
       setUserStorage({ ...data });
     } catch (error) {
-      const errorMsg = axios.isAxiosError(error)
-        ? error.response?.data?.error || "Failed to fetch storage details"
-        : "Something went wrong";
-      if (error.status === 401 && errorMsg === "Expired or Invalid Session")
-        navigate("/login");
-      else {
-        setError(errorMsg);
-        setTimeout(() => setError(""), 3000);
-      }
+      const msg = "Failed to fetch storage info";
+      axiosError(error, navigate, setError, msg);
     }
   }, [setUserStorage, navigate, setError]);
 

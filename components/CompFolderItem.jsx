@@ -8,8 +8,7 @@ import { MdOutlineDriveFileRenameOutline } from "react-icons/md";
 import { MdOutlineInfo } from "react-icons/md";
 import ModalFolderDetails from "../modals/ModalFolderDetails";
 import { calSize } from "../utils/CalculateFileSize";
-import { axiosWithCreds } from "../utils/AxiosInstance";
-import axios from "axios";
+import { axiosError, axiosWithCreds } from "../utils/AxiosInstance";
 import {
   ErrorContext,
   FolderIDContext,
@@ -58,15 +57,8 @@ export default function CompFolderItem({
         setUpdate(data.message);
         setTimeout(() => setUpdate(""), 3000);
       } catch (error) {
-        const errorMsg = axios.isAxiosError(error)
-          ? error.response?.data?.error || "Failed to rename folder"
-          : "Something went wrong";
-        if (error.status === 401 && errorMsg === "Expired or Invalid Session")
-          navigate("/login");
-        else {
-          setError(errorMsg);
-          setTimeout(() => setError(""), 3000);
-        }
+        const msg = "Failed to rename folder";
+        axiosError(error, navigate, setError, msg);
       }
     }
   }
@@ -84,15 +76,8 @@ export default function CompFolderItem({
       setUpdate(data.message);
       setTimeout(() => setUpdate(""), 3000);
     } catch (error) {
-      const errorMsg = axios.isAxiosError(error)
-        ? error.response?.data?.error || "Failed to delete folder"
-        : "Something went wrong";
-      if (error.status === 401 && errorMsg === "Expired or Invalid Session")
-        navigate("/login");
-      else {
-        setError(errorMsg);
-        setTimeout(() => setError(""), 3000);
-      }
+      const msg = "Failed to delete folder";
+      axiosError(error, navigate, setError, msg);
     }
   }
 

@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import CompRegisterNav from "../components/CompRegisterNav";
 import CompGoogleBtn from "../components/CompGoogleBtn";
 import CompRegisterToLogin from "../components/CompRegisterToLogin";
-import { axiosWithOutCreds } from "../utils/AxiosInstance";
-import axios from "axios";
+import { axiosError, axiosWithOutCreds } from "../utils/AxiosInstance";
 
 export default function PageUserRegister() {
   const navigate = useNavigate();
@@ -46,11 +45,8 @@ export default function PageUserRegister() {
           setVerifyOTP(true);
         }
       } catch (error) {
-        const errorMsg = axios.isAxiosError(error)
-          ? error.response?.data?.error || "OTP fetching failed"
-          : "Something went wrong";
-        setError(errorMsg);
-        setTimeout(() => setError(""), 3000);
+        const msg = "Failed to request OTP";
+        axiosError(error, navigate, setError, msg);
       }
     }
   }
@@ -77,11 +73,8 @@ export default function PageUserRegister() {
           setEnableRegister(true);
         }
       } catch (error) {
-        const errorMsg = axios.isAxiosError(error)
-          ? error.response?.data?.error || "OTP verification failed"
-          : "Something went wrong";
-        setError(errorMsg);
-        setTimeout(() => setError(""), 3000);
+        const msg = "Failed to verify OTP";
+        axiosError(error, navigate, setError, msg);
       }
     }
   }
@@ -102,12 +95,9 @@ export default function PageUserRegister() {
         console.log(data.message);
         navigate("/login");
       } catch (error) {
-        const errorMsg = axios.isAxiosError(error)
-          ? error.response?.data?.error || "User registration failed"
-          : "Something went wrong";
         setRequestOTP(false);
-        setError(errorMsg);
-        setTimeout(() => setError(""), 3000);
+        const msg = "Failed to register user";
+        axiosError(error, navigate, setError, msg);
       }
     }
   }

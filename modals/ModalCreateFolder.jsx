@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { ErrorContext, UpdateContext } from "../utils/Contexts.js";
-import { axiosWithCreds } from "../utils/AxiosInstance.js";
+import { axiosError, axiosWithCreds } from "../utils/AxiosInstance.js";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -34,15 +34,8 @@ export default function ModalCreateFolder({
           handleDirectoryDetails(folderID);
         }
       } catch (error) {
-        const errorMsg = axios.isAxiosError(error)
-          ? error.response?.data?.error || "Failed to create folder"
-          : "Something went wrong";
-        if (error.status === 401 && errorMsg === "Expired or Invalid Session")
-          navigate("/login");
-        else {
-          setError(errorMsg);
-          setTimeout(() => setError(""), 3000);
-        }
+        const msg = "Failed to create folder";
+        axiosError(error, navigate, setError, msg);
       }
     }
   }

@@ -13,7 +13,7 @@ dist-ssr
 *.local
 .env
 .env.development
-
+newFeatures.txt
 
 # Editor directories and files
 .vscode/*
