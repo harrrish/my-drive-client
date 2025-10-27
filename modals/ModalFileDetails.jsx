@@ -16,10 +16,10 @@ export default function ModalFileDetails({
   const { directoryDetails } = useContext(DirectoryContext);
 
   return (
-    <div className="fixed inset-0 z-50 w-full min-h-[100vh] bg-clr3/80 flex items-center justify-center font-emb">
-      <div className="w-[90%] sm:max-w-2xl bg-clr1 p-4 text-clr3  ">
-        <div className="flex items-center justify-between bg-clr4 p-2 text-clr1">
-          <h1 className="font-bookerly-display font-bold">File Details</h1>
+    <div className="fixed inset-0 z-50 w-full min-h-[100vh] flex items-center justify-center ">
+      <div className="w-[90%] sm:max-w-2xl p-4   ">
+        <div className="flex items-center justify-betweenp-2 ">
+          <h1 className="">File Details</h1>
           <button
             className="cursor-pointer  "
             onClick={() => setFileDetails(false)}
@@ -30,17 +30,17 @@ export default function ModalFileDetails({
 
         <div className="p-2 flex flex-col gap-2  ">
           <h1>
-            Name: <span className="font-bold italic">{name}</span>
+            Name: <span className=" italic">{name}</span>
           </h1>
           <h1>
-            size: <span className="font-bold italic">{calSize(size)}</span>
+            size: <span className=" italic">{calSize(size)}</span>
           </h1>
           <h1>
             type: <span className=" uppercase">{extension.substr(1)}</span>
           </h1>
           <div className="flex gap-1">
             <span>path:</span>
-            <div className="flex items-center whitespace-nowrap font-bold italic">
+            <div className="flex items-center whitespace-nowrap  italic">
               {directoryDetails.path.map((p) => (
                 <div key={p.id} className="flex items-center">
                   <button
@@ -58,15 +58,15 @@ export default function ModalFileDetails({
                 </div>
               ))}
             </div>
-            <span className="font-bold italic">{name}</span>
+            <span className=" italic">{name}</span>
           </div>
           <h1>
             _createdAt:
-            <span className="font-bold italic"> {calDateNTime(createdAt)}</span>
+            <span className=" italic"> {calDateNTime(createdAt)}</span>
           </h1>
           <h1>
             _updatedAt:
-            <span className="font-bold italic"> {calDateNTime(updatedAt)}</span>
+            <span className=" italic"> {calDateNTime(updatedAt)}</span>
           </h1>
         </div>
       </div>

@@ -1,152 +1,92 @@
 @import "tailwindcss";
-
-/** Ember */
 @font-face {
-  font-family: "Ember";
-  src: url("./Fonts/AmazonEmber_Th.ttf");
+  font-family: "google";
+  src: url("./Fonts/google/ProductSans-Thin.ttf");
   font-weight: 100;
-  font-style: normal;
+  font-style: thin;
 }
 @font-face {
-  font-family: "Ember";
-  src: url("./Fonts/AmazonEmber_Lt.ttf");
+  font-family: "google";
+  src: url("./Fonts/google/ProductSans-Light.ttf");
   font-weight: 300;
-  font-style: normal;
+  font-style: light;
 }
 @font-face {
-  font-family: "Ember";
-  src: url("./Fonts/AmazonEmber_Rg.ttf");
+  font-family: "google";
+  src: url("./Fonts/google/ProductSans-Regular.ttf");
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
-  font-family: "Ember";
-  src: url("./Fonts/AmazonEmber_Bd.ttf");
+  font-family: "google";
+  src: url("./Fonts/google/ProductSans-Medium.ttf");
+  font-weight: 500;
+  font-style: medium;
+}
+@font-face {
+  font-family: "google";
+  src: url("./Fonts/google/ProductSans-Bold.ttf");
   font-weight: 700;
-  font-style: normal;
+  font-style: extrabold;
 }
 @font-face {
-  font-family: "Ember";
-  src: url("./Fonts/AmazonEmber_He.ttf");
-  font-weight: 800;
-  font-style: normal;
+  font-family: "google";
+  src: url("./Fonts/google/ProductSans-Black.ttf");
+  font-weight: 900;
+  font-style: bold;
 }
-
 @font-face {
-  font-family: "Ember";
-  src: url("./Fonts/AmazonEmber_ThIt.ttf");
+  font-family: "google-Italic";
+  src: url("./Fonts/google/ProductSans-ThinItalic.ttf");
   font-weight: 100;
-  font-style: italic;
+  font-style: thin;
 }
 @font-face {
-  font-family: "Ember";
-  src: url("./Fonts/AmazonEmber_LtIt.ttf");
+  font-family: "google-Italic";
+  src: url("./Fonts/google/ProductSans-LightItalic.ttf");
   font-weight: 300;
-  font-style: italic;
+  font-style: light;
 }
 @font-face {
-  font-family: "Ember";
-  src: url("./Fonts/AmazonEmber_RgIt.ttf");
+  font-family: "google-Italic";
+  src: url("./Fonts/google/ProductSans-Italic.ttf");
   font-weight: 400;
-  font-style: italic;
+  font-style: normal;
 }
 @font-face {
-  font-family: "Ember";
-  src: url("./Fonts/AmazonEmber_MdIt.ttf");
+  font-family: "google-Italic";
+  src: url("./Fonts/google/ProductSans-MediumItalic.ttf");
   font-weight: 500;
-  font-style: italic;
+  font-style: medium;
 }
 @font-face {
-  font-family: "Ember";
-  src: url("./Fonts/AmazonEmber_BdIt.ttf");
+  font-family: "google-Italic";
+  src: url("./Fonts/google/ProductSans-BoldItalic.ttf");
   font-weight: 700;
-  font-style: italic;
+  font-style: extrabold;
 }
 @font-face {
-  font-family: "Ember";
-  src: url("./Fonts/AmazonEmber_HeIt.ttf");
-  font-weight: 800;
-  font-style: italic;
-}
-
-/** Ember Display */
-@font-face {
-  font-family: "Ember Display";
-  src: url("./Fonts/AmazonEmberDisplay_Lt.ttf");
-  font-weight: 300;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Ember Display";
-  src: url("./Fonts/AmazonEmberDisplay_Rg.ttf");
-  font-weight: 400;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Ember Display";
-  src: url("./Fonts/AmazonEmberDisplay_Md.ttf");
-  font-weight: 500;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Ember Display";
-  src: url("./Fonts/AmazonEmberDisplay_Bd.ttf");
-  font-weight: 700;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Ember Display";
-  src: url("./Fonts/AmazonEmberDisplay_He.ttf");
-  font-weight: 800;
-  font-style: normal;
-}
-
-/** Bookerly Display */
-@font-face {
-  font-family: "Bookerly Display";
-  src: url("./Fonts/BookerlyDisplay_Rg.ttf");
-  font-weight: 400;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Bookerly Display";
-  src: url("./Fonts/BookerlyDisplay_It.ttf");
-  font-weight: 400;
-  font-style: italic;
-}
-@font-face {
-  font-family: "Bookerly Display";
-  src: url("./Fonts/BookerlyDisplay_Bd.ttf");
-  font-weight: 700;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Bookerly Display";
-  src: url("./Fonts/BookerlyDisplay_BdIt.ttf");
-  font-weight: 700;
-  font-style: italic;
+  font-family: "google-Italic";
+  src: url("./Fonts/google/ProductSans-BlackItalic.ttf");
+  font-weight: 900;
+  font-style: bold;
 }
 
 @theme {
-  --font-emb: "Ember", system-ui, sans-serif;
-  --font-emb-con: "Ember Condensed", system-ui, sans-serif;
-  --font-emb-con-rc: "Ember Condensed RC", system-ui, sans-serif;
-  --font-emb-display: "Ember Display", system-ui, sans-serif;
-  --font-emb-mono: "Ember Mono", ui-monospace, monospace;
-  --font-emb-duospace: "Ember Duospace", ui-monospace, monospace;
-
-  --font-bookerly: "Bookerly", ui-serif, serif;
-  --font-bookerly-display: "Bookerly Display", ui-serif, serif;
-  --font-bookerly-lcd: "Bookerly LCD", ui-serif, serif;
+  --font-google:"google",system-ui, sans-serif;
+  --font-googleIt:"google-Italic",system-ui, sans-serif;
 
   /* Define a single custom color */
-  --color-clr1: #ffffff;
-  --color-clr2: #616161;
-  --color-clr3: #000000;
-  --color-clr4: #00a6f4;
-  --color-clr5: #00a63e;
-  --color-clr6: #42b4ff;
-  --color-clr7: #ff9900;
+  --color-clrWhite: #ffffff;
+  --color-clrGray:#eeebeb;
+  --color-clrDisable:#eeebeb;
+  --color-clrYellow: #FFBA00;
+  --color-clrRed: #FF4131;
+  --color-clrGreen: #00831E;
+  --color-clrDarkGreen: #00AD3C;
+  --color-clrLightBlue: #0084FF;
+  --color-clrDarkBlue: #0066DD;
+  --color-clrBlack:#000000
 
   --animate-slide: slide 3s ease-in-out 1;
 

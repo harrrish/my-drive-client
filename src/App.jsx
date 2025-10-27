@@ -1,10 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import PageDirectoryView from "../pages/PageDirectoryView";
-import PageUserRegister from "../pages/PageUserRegister";
-import PageUserLogin from "../pages/PageUserLogin";
-import PageBin from "../pages/PageBin";
-import PageUserProfile from "../pages/PageUserProfile";
-import PagePurchasePremium from "../pages/PagePurchasePremium";
+import PageDirectoryView from "../pages/Home";
+import PageUserRegister from "../pages/Register";
+import PageUserLogin from "../pages/Login";
+import PageBin from "../pages/Bin";
+import PageUserProfile from "../pages/Profile";
+import PagePurchasePremium from "../pages/Purchase";
 
 const router = createBrowserRouter([
   {
