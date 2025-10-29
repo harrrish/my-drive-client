@@ -1,15 +1,16 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import PageDirectoryView from "../pages/Home";
+import PageDirectoryView from "../pages/Directory";
 import PageUserRegister from "../pages/Register";
 import PageUserLogin from "../pages/Login";
 import PageBin from "../pages/Bin";
 import PageUserProfile from "../pages/Profile";
 import PagePurchasePremium from "../pages/Purchase";
+import Home from "../pages/Home";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <PageDirectoryView />,
+    element: <Home />,
   },
   {
     path: "/directory",

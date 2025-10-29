@@ -34,7 +34,7 @@ export default function PageUserLogin() {
         const { data } = await axiosWithCreds.post("/user/login", formData);
         console.log(data.message);
         setUserView(false);
-        navigate("/");
+        navigate("/directory");
       } catch (error) {
         const msg = "Failed to login user";
         axiosError(error, navigate, setError, msg);
@@ -43,8 +43,8 @@ export default function PageUserLogin() {
   }
 
   return (
-    <div className="min-h-[100vh] flex justify-center items-center font-google">
-      <div className="w-[90%] sm:max-w-md mx-auto p-6 shadow-lg flex flex-col gap-4 rounded-sm">
+    <div className="min-h-[100vh] flex justify-center items-center font-google bg-clrGray">
+      <div className="w-[90%] sm:max-w-md mx-auto p-6 shadow-2xl flex flex-col gap-4 rounded-sm bg-white">
         {/* //* ==========>NAVBAR */}
         <CompLoginNav />
 
@@ -81,14 +81,18 @@ export default function PageUserLogin() {
           </div>
 
           {/* //* ==========>ERROR */}
-          {error && <h1 className="text-center p-1 ">{error} !</h1>}
+          {error && (
+            <h1 className="text-center p-1 text-clrWhite bg-clrRed tracking-wider">
+              {error} !
+            </h1>
+          )}
 
           {/* //* ==========>LOGIN BUTTON */}
           <div>
             <button
               type="button"
               onClick={handleLogin}
-              className={`w-full py-2  px-4 border-2   cursor-pointer shadow-sm focus:outline-none`}
+              className={`w-full py-2  px-4 border-2 cursor-pointer shadow-sm focus:outline-none`}
             >
               Login
             </button>
@@ -96,9 +100,9 @@ export default function PageUserLogin() {
         </div>
 
         {/* //* ==========>FOOTER */}
-        <div className=" flex flex-col gap-2 items-center">
+        <div className=" flex flex-col gap-1 items-center">
           <CompLoginToRegister />
-          <h1 className="text-center">Or</h1>
+          <h1 className="text-center font-bold text-sm">Or</h1>
           <CompGoogleBtn />
         </div>
       </div>

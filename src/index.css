@@ -73,20 +73,19 @@
 }
 
 @theme {
-  --font-google:"google",system-ui, sans-serif;
-  --font-googleIt:"google-Italic",system-ui, sans-serif;
+  --font-google: "google", system-ui, sans-serif;
+  --font-googleIt: "google-Italic", system-ui, sans-serif;
 
   /* Define a single custom color */
   --color-clrWhite: #ffffff;
-  --color-clrGray:#eeebeb;
-  --color-clrDisable:#eeebeb;
-  --color-clrYellow: #FFBA00;
-  --color-clrRed: #FF4131;
-  --color-clrGreen: #00831E;
-  --color-clrDarkGreen: #00AD3C;
-  --color-clrLightBlue: #0084FF;
-  --color-clrDarkBlue: #0066DD;
-  --color-clrBlack:#000000
+  --color-clrGray: #eeebeb;
+  --color-clrDisable: #eeebeb;
+  --color-clrYellow: #ffba00;
+  --color-clrRed: #ff4131;
+  --color-clrLightGreen: #00831e;
+  --color-clrDarkGreen: #00ad3c;
+  --color-clrLightBlue: #0084ff;
+  --color-clrDarkBlue: #0066dd;
 
   --animate-slide: slide 3s ease-in-out 1;
 

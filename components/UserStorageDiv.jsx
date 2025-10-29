@@ -25,12 +25,12 @@ export default function CompUserStorage() {
   }
 
   return (
-    <div className="w-[95%] flex flex-col gap-2 shadow-lg  my-1 mx-auto p-2 rounded-sm  items-center">
+    <div className="flex flex-col gap-2 my-1 mx-auto rounded-sm items-center">
       {/* //* ==========>STORAGE */}
-      <div className="w-full flex items-center mx-auto">
-        <div className="bg-black p-[2px] w-[85%]">
+      <div className="w-[80%] flex items-center mx-auto gap-2">
+        <div className="bg-clrLightBlue p-[2px] w-[80%] ">
           <div
-            className="p-[2px] bg-white"
+            className="p-[2px] bg-clrWhite"
             style={{
               width: `${
                 userStorage.size || 0 / userStorage.maxStorageInBytes || 0
@@ -38,7 +38,7 @@ export default function CompUserStorage() {
             }}
           ></div>
         </div>
-        <h1 className="flex items-center justify-center gap-1 truncate duration-300 w-[15%]">
+        <h1 className="flex items-center justify-center gap-1 truncate duration-300 w-[20%]">
           <span>{calSize(userStorage.size)}</span> of
           <span>{calSize(userStorage.maxStorageInBytes)}</span>
         </h1>
@@ -48,27 +48,27 @@ export default function CompUserStorage() {
       <div className="flex flex-col sm:flex-row gap-2 w-full items-center">
         <button
           onClick={() => navigate("/profile")}
-          className="w-[90%] text-sm flex items-center justify-center gap-1   flex-1  border-2 p-1 cursor-pointer truncate rounded-sm   duration-300"
+          className="font-medium border-2 flex justify-center items-center gap-1 cursor-pointer w-1/2 hover:text-white hover:bg-clrLightBlue tracking-wider hover:font-bold duration-300"
         >
           Profile
           <FaUser />
         </button>
         <button
           onClick={() => navigate("/bin")}
-          className="w-[90%] text-sm flex items-center justify-center gap-1   flex-1  border-2 p-1 cursor-pointer truncate rounded-sm   duration-300"
+          className="font-medium border-2 flex justify-center items-center gap-1 cursor-pointer w-1/2 hover:text-white hover:bg-clrLightBlue tracking-wider hover:font-bold duration-300"
         >
           Trash
           <FaTrash />
         </button>
         <button
           onClick={() => navigate("/purchase-premium")}
-          className="w-[90%] text-sm flex items-center justify-center gap-1   flex-1  border-2 p-1 cursor-pointer truncate rounded-sm   duration-300"
+          className="font-medium border-2 flex justify-center items-center gap-1 cursor-pointer w-1/2 hover:text-white hover:bg-clrLightBlue tracking-wider hover:font-bold duration-300"
         >
           Buy Premium
           <BiSolidPurchaseTag />
         </button>
         <button
-          className="w-[90%] text-sm flex items-center justify-center gap-1   flex-1  border-2 p-1 cursor-pointer truncate rounded-sm   duration-300"
+          className="font-medium border-2 flex justify-center items-center gap-1 cursor-pointer w-1/2 hover:text-white hover:bg-clrLightBlue tracking-wider hover:font-bold duration-300"
           onClick={handleLogout}
         >
           Logout <IoLogOut />
