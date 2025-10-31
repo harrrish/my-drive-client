@@ -95,7 +95,7 @@ export default function PageUserProfile() {
         </h1>
 
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/directory")}
           className="w-[90%] text-sm flex items-center justify-center gap-1   flex-1  p-1 border-2 cursor-pointer truncate shadow-md hover:shadow-2xl   duration-300"
         >
           HOME

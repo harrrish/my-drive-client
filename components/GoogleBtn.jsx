@@ -17,7 +17,7 @@ export default function CompGoogleBtn() {
         // console.log(credentialResponse);
         const res = await loginWithGoogle(credentialResponse.credential);
         if (res === 200 || res === 201) {
-          navigate("/");
+          navigate("/directory");
           setUserView(false);
         }
       }}

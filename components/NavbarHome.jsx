@@ -16,7 +16,7 @@ export default function CompNavbar() {
         <button
           className="text-3xl py-1 cursor-pointer outline-0 flex gap-1 items-center"
           title="Home Page"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/directory")}
         >
           <span className="text-2xl">
             <FaGoogleDrive />

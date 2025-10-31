@@ -8,6 +8,7 @@ import { UserSettingViewContext } from "../utils/Contexts";
 
 export default function PageUserLogin() {
   const navigate = useNavigate();
+  const [login, setLogin] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "alpha@gmail.com",
@@ -25,8 +26,10 @@ export default function PageUserLogin() {
   const { setUserView } = useContext(UserSettingViewContext);
 
   async function handleLogin() {
+    setLogin(true);
     const { email, password } = formData;
     if (!email.trim() || !password.trim()) {
+      setLogin(false);
       setError("Invalid Credentials");
       setTimeout(() => setError(""), 3000);
     } else {
@@ -35,9 +38,11 @@ export default function PageUserLogin() {
         console.log(data.message);
         setUserView(false);
         navigate("/directory");
+        setLogin(false);
       } catch (error) {
         const msg = "Failed to login user";
         axiosError(error, navigate, setError, msg);
+        setLogin(false);
       }
     }
   }
@@ -94,7 +99,7 @@ export default function PageUserLogin() {
               onClick={handleLogin}
               className={`w-full py-2  px-4 border-2 cursor-pointer shadow-sm focus:outline-none`}
             >
-              Login
+              {login ? "Logging in..." : "Login"}
             </button>
           </div>
         </div>
