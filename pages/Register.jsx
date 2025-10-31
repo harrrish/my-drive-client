@@ -24,6 +24,10 @@ export default function PageUserRegister() {
   const [verifyOTP, setVerifyOTP] = useState(false);
   const [enableRegister, setEnableRegister] = useState(false);
 
+  const [requestLoad, setRequestLoad] = useState(false);
+  const [verifyLoad, setVerifyLoad] = useState(false);
+  const [registerLoad, setRegisterLoad] = useState(false);
+
   const [error, setError] = useState("");
   const [update, setUpdate] = useState("");
 
@@ -31,10 +35,12 @@ export default function PageUserRegister() {
 
   //* ==========> REQUEST OTP
   async function handleRequestOTP() {
+    setRequestLoad(true);
     const { email } = formData;
     if (!email.trim()) {
       setError("Invalid Email");
       setTimeout(() => setError(""), 3000);
+      setRequestLoad(false);
     } else {
       try {
         const res = await axiosWithOutCreds.post("/auth/send-otp", { email });
@@ -43,20 +49,24 @@ export default function PageUserRegister() {
           console.log(data.message);
           setRequestOTP(true);
           setVerifyOTP(true);
+          setRequestLoad(false);
         }
       } catch (error) {
         const msg = "Failed to request OTP";
         axiosError(error, navigate, setError, msg);
+        setRequestLoad(false);
       }
     }
   }
 
   //* ==========> VERIFY OTP
   async function handleVerifyOTP() {
+    setVerifyLoad(true);
     const { email, otp } = formData;
     if (!email.trim() || !otp.trim()) {
       setError("Invalid Email or OTP");
       setTimeout(() => setError(""), 3000);
+      setVerifyLoad(false);
     } else {
       try {
         // console.log(formData.email, formData.otp);
@@ -71,21 +81,25 @@ export default function PageUserRegister() {
           setTimeout(() => setUpdate(""), 3000);
           setVerifyOTP(false);
           setEnableRegister(true);
+          setVerifyLoad(false);
         }
       } catch (error) {
         const msg = "Failed to verify OTP";
         axiosError(error, navigate, setError, msg);
+        setVerifyLoad(false);
       }
     }
   }
 
   //* ==========> REGISTER USER
   async function handleRegister() {
+    setRegisterLoad(true);
     const { name, email, password, otp } = formData;
     if (!name.trim() || !email.trim() || !password.trim() || !otp.trim()) {
       setEnableRegister(false);
       setError("Invalid Credentials");
       setTimeout(() => setError(""), 3000);
+      setRegisterLoad(false);
     } else {
       try {
         const { data } = await axiosWithOutCreds.post(
@@ -94,10 +108,12 @@ export default function PageUserRegister() {
         );
         console.log(data.message);
         navigate("/login");
+        setRegisterLoad(false);
       } catch (error) {
         setRequestOTP(false);
         const msg = "Failed to register user";
         axiosError(error, navigate, setError, msg);
+        setRegisterLoad(false);
       }
     }
   }
@@ -118,7 +134,7 @@ export default function PageUserRegister() {
   }, [verifyOTP]);
 
   return (
-    <div className="min-h-[100vh] flex justify-center items-center font-body">
+    <div className="min-h-[100vh] flex justify-center items-center font-google">
       <div className="w-[90%] sm:max-w-md mx-auto p-6 shadow-lg flex flex-col gap-4 rounded-sm">
         {/* //* ==========>NAVBAR */}
         <CompRegisterNav />
@@ -159,10 +175,9 @@ export default function PageUserRegister() {
                 disabled={verifyOTP}
                 className=" hover:underline font-google font-medium hover:font-bold cursor-pointer disabled:cursor-not-allowed disabled:hover:decoration-0"
               >
-                Request OTP
+                {requestLoad ? "Requesting OTP..." : "Request OTP"}
               </button>
             )}
-            {/* //* ==========>Request OTP */}
             {verifyOTP && (
               <div className="w-full">
                 <div>
@@ -175,13 +190,12 @@ export default function PageUserRegister() {
                     placeholder="****"
                     className={`w-full px-3 py-2 border-2 shadow-sm focus:outline-blue-400`}
                   />
-                  {/* //* ==========>VERIFY OTP */}
                   <div className="flex justify-between w-full">
                     <button
                       onClick={handleVerifyOTP}
                       className=" hover:underline font-google font-medium hover:font-bold cursor-pointer disabled:cursor-not-allowed disabled:hover:decoration-0"
                     >
-                      Verify OTP
+                      {verifyLoad ? "Verifying OTP..." : "Verify OTP"}
                     </button>
                     <span>(OTP is valid for {timer} seconds)</span>
                   </div>
@@ -206,9 +220,18 @@ export default function PageUserRegister() {
           </div>
 
           {/* //* ==========>ERROR */}
-          {error && <h1 className="text-center p-1">{error} !</h1>}
+          {error && (
+            <h1 className="text-center p-1 bg-red-600 text-white transform transition-all duration-500 ease-in-out opacity-0 animate-[fadeInOut_3s_ease-in-out]">
+              {error} !
+            </h1>
+          )}
+
           {/* //* ==========>UPDATE */}
-          {update && <h1 className="text-center p-1 ">{update} !</h1>}
+          {update && (
+            <h1 className="text-center p-1 bg-green-600 text-white transform transition-all duration-500 ease-in-out opacity-0 animate-[fadeInOut_3s_ease-in-out]">
+              {update} !
+            </h1>
+          )}
 
           {/* //* ==========>REGISTER BUTTON */}
           <div>
@@ -216,9 +239,9 @@ export default function PageUserRegister() {
               type="button"
               onClick={handleRegister}
               disabled={!enableRegister}
-              className={`w-full py-2  px-4 border-2 cursor-pointer shadow-sm focus:outline-none disabled:cursor-not-allowed`}
+              className={`w-full py-2  px-4 border-2 cursor-pointer shadow-sm focus:outline-none disabled:cursor-not-allowed disabled:bg-clrGray`}
             >
-              Register
+              {registerLoad ? "Registering User..." : "Register"}
             </button>
           </div>
         </div>

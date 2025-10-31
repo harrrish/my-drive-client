@@ -100,7 +100,7 @@ export default function CompFileItem({
         title={`Name: ${name}\nSize: ${calSize(size)}\nCreated at: ${new Date(
           createdAt
         ).toLocaleString()}`}
-        className={`group flex justify-between border-2 p-2 items-center shadow-sm hover:shadow-md duration-300`}
+        className={`group flex justify-between border-1 p-2 items-center shadow-sm hover:shadow-md duration-300 bg-clrLightBlue text-clrGray tracking-wider hover:bg-transparent hover:text-black`}
       >
         <div className={`w-[80%] cursor-pointer items-start`}>
           {rename ? (

@@ -97,7 +97,7 @@ export default function PageUserLogin() {
             <button
               type="button"
               onClick={handleLogin}
-              className={`w-full py-2  px-4 border-2 cursor-pointer shadow-sm focus:outline-none`}
+              className={`w-full py-2 px-4 border-2 cursor-pointer shadow-sm focus:outline-none hover:bg-clrLightBlue hover:text-white`}
             >
               {login ? "Logging in..." : "Login"}
             </button>

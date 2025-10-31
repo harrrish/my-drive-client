@@ -10,7 +10,7 @@ export default function CompNavbar() {
   const { userView, setUserView } = useContext(UserSettingViewContext);
 
   return (
-    <nav className="flex flex-col justify-between w-full rounded-sm sm:max-w-6xl mx-auto transition-all duration-300 bg-white shadow-sm hover:shadow-lg p-2">
+    <nav className="flex flex-col justify-between w-[95%] rounded-sm sm:max-w-3xl md:max-w-4xl mx-auto transition-all duration-300 bg-white shadow-sm hover:shadow-lg p-2">
       <div className="flex justify-between items-center">
         {/* //* ==========>TITLE */}
         <button

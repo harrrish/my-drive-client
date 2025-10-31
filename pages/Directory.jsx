@@ -165,7 +165,7 @@ export default function PageDirectoryView() {
         });
         resetUploadState();
         handleDirectoryDetails(dirID);
-        setUpdate(`File "${name}" uploaded !`);
+        setUpdate(`File "${name}" uploaded`);
         setTimeout(() => setUpdate(""), 3000);
       }
     } catch (error) {
@@ -201,7 +201,7 @@ export default function PageDirectoryView() {
         {/* //* ==========>NAVBAR */}
         <CompNavbar />
         {/*//* ==========>Folder Path} */}
-        <div className="w-[95%] sm:max-w-5xl mx-auto px-2   shadow-md hover:shadow-2xl duration-300 rounded-sm h-10 flex items-center overflow-x-auto cursor-grab select-none custom-scrollbar">
+        <div className="w-[95%] sm:max-w-3xl md:max-w-4xl mx-auto px-2 shadow-lg hover:shadow-2xl duration-300 rounded-sm h-10 flex items-center overflow-x-auto cursor-grab select-none custom-scrollbar bg-white">
           <div className="flex items-center whitespace-nowrap">
             {directoryDetails.path.map((p, index) => (
               <div key={p.id} className="flex items-center">
@@ -226,8 +226,8 @@ export default function PageDirectoryView() {
         {/*//* ==========>Create Folder || Upload File} */}
         {/*//* ==========>Search file/folder || Import from Drive} */}
         {/*//* ==========>File and Folders Sort || Files and Folders Count} */}
-        <div className="flex flex-col items-center sm:max-w-5xl w-full gap-1 justify-between mx-auto">
-          <div className="flex w-full shadow-lg border-2 rounded-sm">
+        <div className="flex flex-col items-center sm:max-w-3xl md:max-w-4xl w-[95%] gap-2 justify-between mx-auto">
+          <div className="flex w-full shadow-lg rounded-sm bg-white">
             {/* //* ==========>CREATE FOLDER */}
             <button
               className="flex items-center justify-center gap-2 h-10 w-[25%]"
@@ -284,7 +284,7 @@ export default function PageDirectoryView() {
               </h1>
             </div>
           </div>
-          <div className="flex w-full shadow-lg border-2 rounded-sm">
+          <div className="flex w-full shadow-lg bg-white rounded-sm">
             {/* //* ==========>SEARCH SECTION */}
             <div
               className="hover:cursor-pointer duration-300 flex items-center justify-center rounded-sm h-10 p-1 w-[60%]"
@@ -343,7 +343,7 @@ export default function PageDirectoryView() {
             </h1>
           </div>
         ) : (
-          <div className="flex flex-col w-[95%] sm:max-w-5xl mx-auto">
+          <div className="flex flex-col w-[95%] sm:max-w-3xl md:max-w-4xl mx-auto">
             <div className="p-2">
               {/* //* ==========>DISPLAY FOLDERS */}
               <div id="list" className="flex flex-col w-full mx-auto gap-2">
@@ -376,17 +376,19 @@ export default function PageDirectoryView() {
             <div className="p-2">
               <div>
                 {tempUpload && uploadFile && (
-                  <div className="  mt-2 b p-2 flex flex-col gap-2  shadow-2xl ">
+                  <div className="bg-clrYellow mt-2 b p-2 flex flex-col gap-2 shadow-2xl ">
                     <div className="flex justify-between">
                       <h1>{uploadFile.name}</h1>
                       <h1>{calSize(uploadFile.size)}</h1>
                       <h1>Upload Progress: {uploadPrg}%</h1>
                     </div>
-                    <div className="flex items-center">
-                      <div className="p-[2px]w-[90%] mx-auto">
+                    <div className="flex items-center gap-1">
+                      <div className="bg-black p-[2px] w-full ">
                         <div
-                          className="p-[1px]"
-                          style={{ width: `${uploadPrg}%` }}
+                          className="p-[1px] bg-clrWhite"
+                          style={{
+                            width: `${uploadPrg}%`,
+                          }}
                         ></div>
                       </div>
                       <button className=" cursor-pointer" title="Cancel upload">

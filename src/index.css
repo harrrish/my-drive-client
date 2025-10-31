@@ -125,6 +125,26 @@
     }
   }
 }
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(0px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0px);
+  }
+}
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 1px; /* Set scrollbar width */
   height: 5px;
