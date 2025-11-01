@@ -15,12 +15,12 @@ export default function ModalsDiv({
   return (
     <div>
       {update && (
-        <h1 className="absolute bottom-10 z-50 right-0 py-2 px-8 animate-slide bg-clrDarkGreen text-white tracking-wide">
+        <h1 className="absolute bottom-9 z-50 right-0 py-2 px-8 animate-slide bg-clrDarkGreen text-white tracking-wide">
           {update} !
         </h1>
       )}
       {error && (
-        <h1 className="absolute bottom-10 z-50  right-0 py-2 px-8 animate-slide bg-clrRed text-white tracking-wide">
+        <h1 className="absolute bottom-7 z-50  right-0 py-2 px-8 animate-slide bg-clrRed text-white tracking-wide">
           {error} !
         </h1>
       )}

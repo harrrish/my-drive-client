@@ -119,11 +119,13 @@ export default function PageDirectoryView() {
         }
       );
       console.log(status);
-      const { uploadSignedUrl, fileID } = data;
-      // console.log(fileID);
-      //* ==========>STARTING FILE UPLOAD
-      startUpload(tempItem, uploadSignedUrl, fileID);
-      event.target.value = "";
+      if (status === 200) {
+        const { uploadSignedUrl, fileID } = data;
+        // console.log(fileID);
+        //* ==========>STARTING FILE UPLOAD
+        startUpload(tempItem, uploadSignedUrl, fileID);
+        event.target.value = "";
+      }
     } catch (error) {
       event.target.value = "";
       const msg = "Failed to initiate file upload";

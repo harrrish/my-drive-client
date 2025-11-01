@@ -17,9 +17,9 @@ export default function ModalFolderDetails({
   const { directoryDetails } = useContext(DirectoryContext);
 
   return (
-    <div className="fixed inset-0 z-50 w-full min-h-[100vh] flex items-center justify-center   tracking ">
-      <div className="w-[90%] sm:max-w-2xl p-4">
-        <div className="flex items-center justify-betweenp-2 ">
+    <div className="fixed inset-0 z-50 w-full min-h-[100vh] bg-black/90 flex items-center justify-center">
+      <div className="w-[90%] sm:max-w-2xl p-4 bg-white rounded-sm">
+        <div className="flex items-center justify-between p-2 bg-clrDarkGreen text-white">
           <h1 className="">Folder Details</h1>
           <button
             className="cursor-pointer"
