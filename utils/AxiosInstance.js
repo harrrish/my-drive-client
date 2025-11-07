@@ -19,7 +19,7 @@ export function axiosError(error, navigate, setError, customErr) {
   if (error.status === 401 && errorMsg === "Expired or Invalid Session")
     navigate("/login");
   else {
-    setError(errorMsg);
-    setTimeout(() => setError(""), 3000);
+    setError((prev) => [...prev, errorMsg]);
+    setTimeout(() => setError((prev) => prev.slice(1)), 3000);
   }
 }

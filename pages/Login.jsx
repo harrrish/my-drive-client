@@ -11,8 +11,8 @@ export default function PageUserLogin() {
   const [login, setLogin] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: "alpha@gmail.com",
+    password: "Qwerty@12345",
   });
   //* ==========>HANDLING FORM CHANGE
   const handleChange = (e) => {
@@ -30,8 +30,8 @@ export default function PageUserLogin() {
     const { email, password } = formData;
     if (!email.trim() || !password.trim()) {
       setLogin(false);
-      setError("Invalid Credentials");
-      setTimeout(() => setError(""), 3000);
+      setError((prev) => [...prev, "Invalid Credentials"]);
+      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
     } else {
       try {
         const { data } = await axiosWithCreds.post("/user/login", formData);

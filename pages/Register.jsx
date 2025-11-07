@@ -39,8 +39,8 @@ export default function PageUserRegister() {
     setRequestLoad(true);
     const { email } = formData;
     if (!email.trim()) {
-      setError("Invalid Email");
-      setTimeout(() => setError(""), 3000);
+      setError((prev) => [...prev, "Invalid Email"]);
+      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
       setRequestLoad(false);
     } else {
       try {
@@ -65,8 +65,8 @@ export default function PageUserRegister() {
     setVerifyLoad(true);
     const { email, otp } = formData;
     if (!email.trim() || !otp.trim()) {
-      setError("Invalid Email or OTP");
-      setTimeout(() => setError(""), 3000);
+      setError((prev) => [...prev, "Invalid Email or OTP"]);
+      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
       setVerifyLoad(false);
     } else {
       try {
@@ -78,8 +78,8 @@ export default function PageUserRegister() {
         if (res.status === 200) {
           const { data } = res;
           console.log(data.message);
-          setUpdate(data.message);
-          setTimeout(() => setUpdate(""), 3000);
+          setUpdate((prev) => [...prev, data.message]);
+          setTimeout(() => setUpdate((prev) => prev.slice(1)), 3000);
           setVerifyOTP(false);
           setEnableRegister(true);
           setVerifyLoad(false);
@@ -98,8 +98,8 @@ export default function PageUserRegister() {
     const { name, email, password, otp } = formData;
     if (!name.trim() || !email.trim() || !password.trim() || !otp.trim()) {
       setEnableRegister(false);
-      setError("Invalid Credentials");
-      setTimeout(() => setError(""), 3000);
+      setError((prev) => [...prev, "Invalid Credentials"]);
+      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
       setRegisterLoad(false);
     } else {
       try {

@@ -42,8 +42,8 @@ export default function CompFolderItem({
 
   async function handleRenameFolder() {
     if (!directoryName.trim()) {
-      setError("Please provider a valid folder name");
-      setTimeout(() => setError(""), 3000);
+      setError((prev) => [...prev, "Please provide a valid folder name"]);
+      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
     } else {
       try {
         const { data, status } = await axiosWithCreds.patch(
@@ -55,8 +55,8 @@ export default function CompFolderItem({
           handleDirectoryDetails(parentFID);
           setRename(false);
         }
-        setUpdate(data.message);
-        setTimeout(() => setUpdate(""), 3000);
+        setUpdate((prev) => [...prev, data.message]);
+        setTimeout(() => setUpdate((prev) => prev.slice(1)), 3000);
       } catch (error) {
         const msg = "Failed to rename folder";
         axiosError(error, navigate, setError, msg);
@@ -74,8 +74,8 @@ export default function CompFolderItem({
         handleDirectoryDetails(parentFID);
         setRename(false);
       }
-      setUpdate(data.message);
-      setTimeout(() => setUpdate(""), 3000);
+      setUpdate((prev) => [...prev, data.message]);
+      setTimeout(() => setUpdate((prev) => prev.slice(1)), 3000);
     } catch (error) {
       const msg = "Failed to delete folder";
       axiosError(error, navigate, setError, msg);

@@ -18,8 +18,8 @@ export default function ModalCreateFolder({
   async function handleCreateFolder() {
     setCreateLoad(true);
     if (!folderName.trim()) {
-      setError("Please provide a valid folder name");
-      setTimeout(() => setError(""), 3000);
+      setError((prev) => [...prev, "Please provide a valid folder name"]);
+      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
       setCreateLoad(false);
     } else {
       try {
@@ -30,8 +30,8 @@ export default function ModalCreateFolder({
           }
         );
         if (status === 201) {
-          setUpdate(data.message);
-          setTimeout(() => setUpdate(""), 3000);
+          setUpdate((prev) => [...prev, data.message]);
+          setTimeout(() => setUpdate((prev) => prev.slice(1)), 3000);
           setCreateFolder(false);
           handleDirectoryDetails(folderID);
           setCreateLoad(false);

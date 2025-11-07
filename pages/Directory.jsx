@@ -1,8 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import mime from "mime";
-
 import {
   DirectoryContext,
   ErrorContext,
@@ -11,13 +8,10 @@ import {
 } from "../utils/Contexts.js";
 import { axiosError, axiosWithCreds } from "../utils/AxiosInstance.js";
 import { calSize } from "../utils/CalculateFileSize.js";
-
 import CompNavbar from "../components/NavbarHome.jsx";
 import CompFileItem from "../components/FileItem.jsx";
 import CompFolderItem from "../components/FolderItem.jsx";
-
 import ModalsDiv from "../modals/ModalsDiv.jsx";
-
 import { MdCancel, MdGridView } from "react-icons/md";
 import { TiFolderAdd } from "react-icons/ti";
 import { FaFileUpload, FaSearch, FaSortAmountDown } from "react-icons/fa";
@@ -25,24 +19,24 @@ import { LuFiles } from "react-icons/lu";
 import { FaGoogleDrive, FaList } from "react-icons/fa6";
 import { IoMdArrowDropright } from "react-icons/io";
 import { RiFoldersFill } from "react-icons/ri";
-import HomeLoading from "../components/HomeLoading.jsx";
+import {
+  startSingleUpload,
+  uploadSingleFile,
+} from "../utils/UploadSingleFile.js";
+import { BiFolderOpen } from "react-icons/bi";
 
 export default function PageDirectoryView() {
   const { dirID } = useParams();
   const navigate = useNavigate();
   const [showCreateFolder, setCreateFolder] = useState(false);
-  const [contentLoading, setContentLoading] = useState(false);
   const { setError } = useContext(ErrorContext);
   const { setUpdate } = useContext(UpdateContext);
   const { setUserStorage } = useContext(UserStorageContext);
   const { directoryDetails, setDirectoryDetails } =
     useContext(DirectoryContext);
 
-  const [uploadFile, setUploadFile] = useState(null);
-  const [tempUpload, setTempUpload] = useState(false);
-  const [uploadPrg, setUploadPrg] = useState(0);
-
-  const xhrRef = useRef(null);
+  const [uploadFile, setUploadFile] = useState([]);
+  const [isUploading, setUploading] = useState(false);
 
   //* ==========> FETCHING USER STORAGE DETAILS
   const handleUserStorageDetails = useCallback(async () => {
@@ -64,135 +58,87 @@ export default function PageDirectoryView() {
   //* ==========> FETCHING DIRECTORY DETAILS
   const handleDirectoryDetails = useCallback(
     async (dirID) => {
-      setContentLoading(true);
       try {
         const { data } = await axiosWithCreds.get(`/directory/${dirID || ""}`);
         // console.log(data);
         setDirectoryDetails({ ...data });
-        setContentLoading(false);
         handleUserStorageDetails();
       } catch (error) {
-        setContentLoading(false);
         const msg = "Failed to fetch folder content";
         axiosError(error, navigate, setError, msg);
       }
     },
     [setDirectoryDetails, setError, handleUserStorageDetails, navigate]
   );
-  //* ==========>Handling file select and getting upload URL
-  async function handleFileSelect(event) {
-    //* ==========>SELECTING THE FILE
-    const file = event.target.files?.[0];
-    if (!file) return;
-    // console.log(file);
 
-    //* ==========>STOPPING A NEW UPLOAD
-    if (uploadFile?.isUploading) {
-      console.log(event.target.file);
-      setError("An upload is already in progress. Please wait");
-      setTimeout(() => {
-        setError("");
-        event.target.value = "";
-      }, 3000);
+  useEffect(() => {
+    handleDirectoryDetails(dirID);
+  }, [handleDirectoryDetails, dirID]);
+
+  //* ==========> Handling file select and getting upload URL
+  async function handleFileUpload(event) {
+    setUploading(true);
+    //* ==========> Returning if upload in progress
+    if (isUploading) {
+      setError((prev) => [...prev, "An upload in progress. Please wait"]);
+      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
+      event.target.value = "";
       return;
     }
+    const files = event.target.files;
 
-    //* ==========>CREATING A TEMP FILE & PREPARING THE FILE TO BE UPLOADED
-    const tempItem = {
+    //* ==========> Returning if none selected
+    if (files.length < 1) return;
+
+    //* ==========> Creating files for upload
+
+    const uploadList = Array.from(files).map((file) => ({
       file,
       name: file.name,
       size: file.size,
       type: file.type,
-      id: `temp-${Date.now()}`,
+      id: crypto.randomUUID(),
       isUploading: true,
-    };
-    setUploadFile(tempItem);
-    setTempUpload(true);
+      progress: 0,
+    }));
 
-    //* ==========>VIEWING THE PREPARED FILE
-    // console.log({ uploadFile });
+    setUploadFile(uploadList);
 
-    try {
-      //* ==========>INITIATING FILE UPLOAD (GETTING UPLOAD URL)
-      const { data, status } = await axiosWithCreds.post(
-        "/file/upload/initiate",
-        {
-          name: file.name,
-          size: file.size,
-          contentType: file.type,
-          folderID: dirID,
-        }
+    function updateFileProgress(id, progress) {
+      setUploadFile((prev) =>
+        prev.map((file) => (file.id === id ? { ...file, progress } : file))
       );
-      console.log(status);
-      if (status === 200) {
-        const { uploadSignedUrl, fileID } = data;
-        // console.log(fileID);
-        //* ==========>STARTING FILE UPLOAD
-        startUpload(tempItem, uploadSignedUrl, fileID);
-        event.target.value = "";
-      }
-    } catch (error) {
-      event.target.value = "";
-      const msg = "Failed to initiate file upload";
-      axiosError(error, navigate, setError, msg);
-    } finally {
-      event.target.value = "";
+    }
+
+    for (const listItem of uploadList) {
+      console.log(listItem);
+      const responseInitiate = await uploadSingleFile(
+        listItem,
+        dirID,
+        navigate,
+        setError
+      );
+      const { fileID, uploadSignedUrl } = responseInitiate;
+      await startSingleUpload(
+        dirID,
+        listItem,
+        uploadSignedUrl,
+        fileID,
+        handleDirectoryDetails,
+        navigate,
+        setError,
+        setUpdate,
+        updateFileProgress,
+        setUploading,
+        reloadState
+      );
+    }
+
+    function reloadState() {
+      setUploadFile([]);
+      setUploading(false);
     }
   }
-  //* ==========>Upload File along with Handling cancel
-  async function startUpload(item, uploadUrl, fileID) {
-    const { file, type, name, size } = item;
-
-    const controller = new AbortController();
-    xhrRef.current = controller; // reusing the same ref for cancel
-
-    const contentType =
-      type || mime.getType(name) || "application/octet-stream";
-    //* ==========>"application/octet-stream" → generic MIME type for "binary data".
-
-    // console.log({ contentType });
-    // console.log({ uploadUrl, file });
-
-    //* ==========>SENDING FILE TO S3 USING UPLOAD URL
-    try {
-      const res = await axios.put(uploadUrl, file, {
-        headers: { "Content-Type": contentType },
-        signal: controller.signal, // allows cancellation
-        onUploadProgress: (evt) => {
-          if (evt.total) {
-            const progress = Math.round((evt.loaded / evt.total) * 100);
-            setUploadPrg(progress);
-          }
-        },
-      });
-      if (res.status === 200 || res.status === 201) {
-        await axiosWithCreds.post("/file/upload/complete", {
-          fileID,
-          size,
-        });
-        resetUploadState();
-        handleDirectoryDetails(dirID);
-        setUpdate(`File "${name}" uploaded`);
-        setTimeout(() => setUpdate(""), 3000);
-      }
-    } catch (error) {
-      const msg = "Failed to upload file";
-      axiosError(error, navigate, setError, msg);
-      resetUploadState();
-      handleDirectoryDetails(dirID);
-    }
-  }
-
-  //* ==========>Resetting the upload state
-  function resetUploadState() {
-    setUploadFile(null);
-    setTempUpload(false);
-    setUploadPrg(0);
-  }
-
-  useEffect(() => {
-    handleDirectoryDetails(dirID);
-  }, [dirID, handleDirectoryDetails]);
 
   return (
     <div className="min-h-screen bg-clrGray border-2 relative overflow-hidden font-google font-medium tracking-wide">
@@ -257,7 +203,7 @@ export default function PageDirectoryView() {
               />
               <input
                 type="file"
-                onChange={(event) => handleFileSelect(event)}
+                onChange={(event) => handleFileUpload(event)}
                 className="hidden"
                 id="fileUpload"
               />
@@ -342,16 +288,20 @@ export default function PageDirectoryView() {
         </div>
         {/* //* ==========>FOLDERS AND FILES  */}
         {directoryDetails.foldersCount < 1 &&
-        directoryDetails.filesCount < 1 ? (
-          <div>
-            <h1 className="text-center text-2xl mt-4">
-              No files or folders found !
+        directoryDetails.filesCount < 1 &&
+        isUploading === false ? (
+          <div className="min-h-[50vh] flex items-center justify-center">
+            <h1 className="group text-center text-lg mt-4 flex items-center gap-2 flex-col">
+              <span className="text-2xl group-hover:scale-150 duration-500">
+                <BiFolderOpen />
+              </span>
+              Empty folder, No files or sub-folders found !
             </h1>
           </div>
         ) : (
-          <div className="flex flex-col w-[95%] sm:max-w-3xl md:max-w-4xl mx-auto">
-            <div className="p-2">
-              {/* //* ==========>DISPLAY FOLDERS */}
+          <div className="flex flex-col w-[95%] sm:max-w-3xl md:max-w-4xl mx-auto gap-2">
+            {/* //* ==========>DISPLAY FOLDERS */}
+            <div className="">
               <div id="list" className="flex flex-col w-full mx-auto gap-2">
                 {directoryDetails.folders.map((directory) => {
                   return (
@@ -365,8 +315,8 @@ export default function PageDirectoryView() {
                 })}
               </div>
             </div>
-            <div className="p-2">
-              {/* //* ==========>DISPLAY FILES */}
+            {/* //* ==========>DISPLAY FILES */}
+            <div className="">
               <div id="list" className={`flex flex-col w-full mx-auto gap-2`}>
                 {directoryDetails.files.map((listItem) => (
                   <CompFileItem
@@ -378,33 +328,26 @@ export default function PageDirectoryView() {
                 ))}
               </div>
             </div>
-            {/* //* ==========>UPLOADING FILE */}
-            <div className="p-2">
-              <div>
-                {tempUpload && uploadFile && (
-                  <div className="bg-clrYellow mt-2 b p-2 flex flex-col gap-2 shadow-2xl ">
-                    <div className="flex justify-between">
-                      <h1>{uploadFile.name}</h1>
-                      <h1>{calSize(uploadFile.size)}</h1>
-                      <h1>Upload Progress: {uploadPrg}%</h1>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div className="bg-black p-[2px] w-full ">
-                        <div
-                          className="p-[1px] bg-clrWhite"
-                          style={{
-                            width: `${uploadPrg}%`,
-                          }}
-                        ></div>
-                      </div>
-                      <button className=" cursor-pointer" title="Cancel upload">
-                        <MdCancel />
-                      </button>
-                    </div>
-                  </div>
-                )}
+          </div>
+        )}
+        {isUploading && uploadFile.length > 0 && (
+          <div className="flex flex-col gap-2">
+            {/* //* ==========> Uploading FILE */}
+            {uploadFile.map((file) => (
+              <div
+                key={file.id}
+                className="border-2 flex flex-col gap-8 p-2 rounded-sm w-[95%] mx-auto"
+              >
+                <div className="flex justify-between w-full">
+                  <h1 className="w-1/3 truncate">{file.name}</h1>
+                  <h1>{calSize(file.size)}</h1>
+                  <h1>Upload progress: {file.progress}%</h1>
+                  <button className="cursor-pointer hover:scale-150 duration-200">
+                    <MdCancel />
+                  </button>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         )}
       </div>

@@ -37,8 +37,8 @@ export default function CompFileItem({
   //* ==========>Rename File
   async function handleFileRename() {
     if (!itemName.trim()) {
-      setError("Please provide a valid file name");
-      setTimeout(() => setError(""), 3000);
+      setError((prev) => [...prev, "Please provide a valid file name"]);
+      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
     } else {
       try {
         const { data, status } = await axiosWithCreds.patch(
@@ -53,8 +53,8 @@ export default function CompFileItem({
           handleDirectoryDetails(parentFID);
           handleUserStorageDetails();
           setRename(false);
-          setUpdate(data.message);
-          setTimeout(() => setUpdate(""), 3000);
+          setUpdate((prev) => [...prev, data.message]);
+          setTimeout(() => setUpdate((prev) => prev.slice(1)), 3000);
         }
       } catch (error) {
         const msg = "Failed to rename file";
@@ -72,8 +72,8 @@ export default function CompFileItem({
       if (status === 201) {
         handleDirectoryDetails(parentFID);
         setRename(false);
-        setUpdate(data.message);
-        setTimeout(() => setUpdate(""), 3000);
+        setUpdate((prev) => [...prev, data.message]);
+        setTimeout(() => setUpdate((prev) => prev.slice(1)), 3000);
       }
     } catch (error) {
       const msg = "Failed to delete file";

@@ -14,16 +14,26 @@ export default function ModalsDiv({
 
   return (
     <div>
-      {update && (
-        <h1 className="absolute bottom-9 z-50 right-0 py-2 px-8 animate-slide bg-clrDarkGreen text-white tracking-wide">
-          {update} !
-        </h1>
-      )}
-      {error && (
-        <h1 className="absolute bottom-7 z-50  right-0 py-2 px-8 animate-slide bg-clrRed text-white tracking-wide">
-          {error} !
-        </h1>
-      )}
+      {Array.isArray(update) &&
+        update.map((u, index) => (
+          <h1
+            key={index}
+            style={{ bottom: `${index * 3 + 2}rem`, right: "0" }}
+            className="absolute z-50 py-2 px-8 animate-slide bg-clrDarkGreen text-white tracking-wide"
+          >
+            {u} !
+          </h1>
+        ))}
+      {Array.isArray(error) &&
+        error.map((e, index) => (
+          <h1
+            key={index}
+            style={{ bottom: `${index * 3 + 2}rem`, right: "0" }}
+            className="absolute z-50 py-2 px-8 animate-slide bg-clrRed text-white tracking-wide"
+          >
+            {e} !
+          </h1>
+        ))}
       {showCreateFolder && (
         <ModalCreateFolder
           setCreateFolder={setCreateFolder}
