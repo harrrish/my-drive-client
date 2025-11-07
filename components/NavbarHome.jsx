@@ -3,7 +3,9 @@ import { useContext } from "react";
 import { UserSettingViewContext } from "../utils/Contexts";
 import { RiUserSettingsFill } from "react-icons/ri";
 import { FaGoogleDrive } from "react-icons/fa";
+import { IoIosNotifications } from "react-icons/io";
 import CompUserStorage from "./UserStorageDiv";
+import { AiOutlineUserSwitch } from "react-icons/ai";
 
 export default function CompNavbar() {
   const navigate = useNavigate();
@@ -14,24 +16,43 @@ export default function CompNavbar() {
       <div className="flex justify-between items-center">
         {/* //* ==========>TITLE */}
         <button
-          className="text-3xl py-1 cursor-pointer outline-0 flex gap-1 items-center"
+          className="text-3xl py-1 cursor-pointer outline-0 flex gap-2 items-center w-[85%]"
           title="Home Page"
           onClick={() => navigate("/directory")}
         >
-          <span className="text-2xl">
+          <span className="text-3xl">
             <FaGoogleDrive />
           </span>
-          My Drive
+          <span className="text-xl hover:scale-110 duration-300">My Drive</span>
         </button>
 
-        {/* //* ==========>SETTINGS */}
-        <button
-          onClick={() => setUserView((prev) => !prev)}
-          className="cursor-pointer text-3xl"
-          title="User settings"
-        >
-          <RiUserSettingsFill />
-        </button>
+        <div className="w-[30%] flex justify-between gap-8">
+          {/* //* ==========>SHARED FILE */}
+          <button
+            className="cursor-pointer text-2xl hover:scale-125 duration-300"
+            title="User settings"
+          >
+            <AiOutlineUserSwitch />
+          </button>
+          {/* //* ==========>NOTIFICATIONS */}
+          <button
+            className="group cursor-pointer text-2xl relative"
+            title="User notifications"
+          >
+            <IoIosNotifications />{" "}
+            <span className="text-sm absolute top-[-10px] left-[-10] bg-black text-white px-2 rounded-full group-hover:scale-115 duration-300">
+              0
+            </span>
+          </button>
+          {/* //* ==========>SETTINGS */}
+          <button
+            onClick={() => setUserView((prev) => !prev)}
+            className="cursor-pointer text-2xl hover:scale-125 duration-300"
+            title="User settings"
+          >
+            <RiUserSettingsFill />
+          </button>
+        </div>
       </div>
 
       {userView && (

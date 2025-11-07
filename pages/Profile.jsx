@@ -12,7 +12,8 @@ import { IoLogOut } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa6";
 import { FaHome } from "react-icons/fa";
 import { axiosError, axiosWithCreds } from "../utils/AxiosInstance";
-import axios from "axios";
+import { FaGoogleDrive } from "react-icons/fa";
+import { TiUserDelete } from "react-icons/ti";
 
 export default function PageUserProfile() {
   const { userDetails, setUserDetails } = useContext(UserDetailsContext);
@@ -64,12 +65,16 @@ export default function PageUserProfile() {
   }, [handleUserProfileDetails, handleUserStorageDetails]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-[50%] max-w-xl flex flex-col items-center p-4 gap-4 rounded-sm shadow-md hover:shadow-lg duration-300">
-        <h2 className="text-5xl ">My Drive</h2>
-        <div className="flex justify-between w-full  er">
-          <h2 className="text-xl ">{userDetails.name}</h2>
-          <h2 className="text-xl ">{userDetails.email}</h2>
+    <div className="min-h-screen flex items-center justify-center font-google bg-clrGray">
+      <div className="w-[50%] max-w-xl flex flex-col items-center p-4 gap-3 rounded-sm shadow-md hover:shadow-lg duration-300 bg-white">
+        <div className="flex justify-between w-full items-center">
+          <h2 className="text-5xl flex gap-2 items-center">
+            <span className="text-3xl">
+              <FaGoogleDrive />
+            </span>
+            <span className="text-2xl font-bold">My Drive</span>
+          </h2>
+          <h2 className="text-xl font-medium">{userDetails.email}</h2>
         </div>
         <img
           src={
@@ -79,53 +84,65 @@ export default function PageUserProfile() {
           alt={`${userDetails.name}'s profile picture`}
           className="w-1/2 rounded-full"
         />
-
-        <div className="p-[2px]w-full">
-          <div
-            className="p-[2px]"
-            style={{
-              width: `${userStorage.size / userStorage.maxStorageInBytes}%`,
-            }}
-          ></div>
+        <div className="flex justify-between w-full items-center border-2 px-4 py-1 rounded-full">
+          <h2 className="text-lg font-medium">{userDetails.name}</h2>
+          <h2 className="text-lg font-medium">Alpha@123</h2>
         </div>
-
-        <h1 className="flex items-center justify-center gap-1 p-1 truncate   duration-300">
-          Used <span>{calSize(userStorage.size)}</span> of{" "}
-          <span>{calSize(userStorage.maxStorageInBytes)}</span>
-        </h1>
-
+        <div className="w-[90%] flex flex-col items-center">
+          <div className="p-[2px] w-full bg-black">
+            <div
+              className="p-[2px] bg-white"
+              style={{
+                width: `${userStorage.size / userStorage.maxStorageInBytes}%`,
+              }}
+            ></div>
+          </div>
+          <h1 className="flex items-center justify-center gap-1 p-1 truncate duration-300 w-[90%]">
+            Used <span>{calSize(userStorage.size)}</span> of{" "}
+            <span>{calSize(userStorage.maxStorageInBytes)}</span>
+          </h1>
+        </div>
         <button
           onClick={() => navigate("/directory")}
-          className="w-[90%] text-sm flex items-center justify-center gap-1   flex-1  p-1 border-2 cursor-pointer truncate shadow-md hover:shadow-2xl   duration-300"
+          className="w-[90%] text-sm flex items-center justify-between p-1 border-2 cursor-pointer truncate duration-150 font-bold px-4 tracking-wide hover:scale-105"
         >
-          HOME
           <FaHome />
+          HOME
         </button>
         <button
           onClick={() => navigate("/bin")}
-          className="w-[90%] text-sm flex items-center justify-center gap-1   flex-1  p-1 border-2 cursor-pointer truncate shadow-md hover:shadow-2xl   duration-300"
+          className="w-[90%] text-sm flex items-center justify-between p-1 border-2 cursor-pointer truncate duration-150 font-bold px-4 tracking-wide hover:scale-105"
         >
-          TRASH BIN
           <FaTrash />
+          TRASH BIN
         </button>
         <button
           onClick={() => navigate("/purchase-premium")}
-          className="w-[90%] text-sm flex items-center justify-center gap-1   flex-1  p-1 border-2 cursor-pointer truncate shadow-md hover:shadow-2xl   duration-300"
+          className="w-[90%] text-sm flex items-center justify-between p-1 border-2 cursor-pointer truncate duration-150 font-bold px-4 tracking-wide hover:scale-105"
         >
-          BUY PREMIUM
           <BiSolidPurchaseTag />
+          BUY PREMIUM
         </button>
         <button
-          className="w-[90%] text-sm flex items-center justify-center gap-1   flex-1  p-1 border-2 cursor-pointer truncate shadow-md hover:shadow-2xl   duration-300"
+          className="w-[90%] text-sm flex items-center justify-between p-1 border-2 cursor-pointer truncate duration-150 font-bold px-4 tracking-wide hover:scale-105"
           onClick={handleLogout}
         >
-          LOGOUT <IoLogOut />
+          <IoLogOut />
+          LOGOUT
         </button>
         <button
-          className="w-[90%] text-sm flex items-center justify-center gap-1   flex-1  p-1 border-2 cursor-pointer truncate shadow-md hover:shadow-2xl   duration-300"
+          className="w-[90%] text-sm flex items-center justify-between p-1 border-2 cursor-pointer truncate duration-150 font-bold px-4 tracking-wide hover:scale-105"
           onClick={handleLogout}
         >
-          LOGOUT ALL ACCOUNTS <IoLogOut />
+          <IoLogOut />
+          LOGOUT ALL ACCOUNTS
+        </button>
+        <button
+          className="w-[90%] text-sm flex items-center justify-between p-1 border-2 cursor-pointer truncate duration-150 font-bold px-4 tracking-wide hover:scale-105"
+          onClick={() => console.log("User deleted")}
+        >
+          <TiUserDelete />
+          DELETE ACCOUNT
         </button>
       </div>
     </div>

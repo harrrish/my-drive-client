@@ -8,9 +8,10 @@ import { axiosError, axiosWithOutCreds } from "../utils/AxiosInstance";
 export default function PageUserRegister() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "Alpha Kumar",
-    email: "alpha@gmail.com",
-    password: "Qwerty@12345",
+    name: "",
+    email: "",
+    username: "",
+    password: "",
     otp: "",
   });
   const handleChange = (e) => {
@@ -134,8 +135,8 @@ export default function PageUserRegister() {
   }, [verifyOTP]);
 
   return (
-    <div className="min-h-[100vh] flex justify-center items-center font-google">
-      <div className="w-[90%] sm:max-w-md mx-auto p-6 shadow-lg flex flex-col gap-4 rounded-sm">
+    <div className="min-h-[100vh] flex justify-center items-center font-google bg-clrGray">
+      <div className="w-[90%] sm:max-w-md mx-auto p-6 shadow-lg flex flex-col gap-4 rounded-sm bg-white">
         {/* //* ==========>NAVBAR */}
         <CompRegisterNav />
 
@@ -151,7 +152,22 @@ export default function PageUserRegister() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="User name"
+              placeholder="Harish S"
+              className={`w-full px-3 py-2 border-2 shadow-sm focus:outline-blue-400`}
+            />
+          </div>
+          {/* //* ==========>USERNAME */}
+          <div className="flex flex-col gap-1">
+            <label htmlFor="username" className="block">
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="harrrish"
               className={`w-full px-3 py-2 border-2 shadow-sm focus:outline-blue-400`}
             />
           </div>
@@ -165,7 +181,7 @@ export default function PageUserRegister() {
               id="email"
               name="email"
               value={formData.email}
-              placeholder="Useremail@abc.com"
+              placeholder="harrrish1906@gmail.com"
               onChange={handleChange}
               className={`w-full px-3 py-2 border-2 shadow-sm focus:outline-blue-400`}
             />
@@ -239,7 +255,7 @@ export default function PageUserRegister() {
               type="button"
               onClick={handleRegister}
               disabled={!enableRegister}
-              className={`w-full py-2  px-4 border-2 cursor-pointer shadow-sm focus:outline-none disabled:cursor-not-allowed disabled:bg-clrGray`}
+              className={`w-full py-2  px-4 border-2 cursor-pointer shadow-sm focus:outline-blue-400 disabled:cursor-not-allowed disabled:bg-clrGray`}
             >
               {registerLoad ? "Registering User..." : "Register"}
             </button>

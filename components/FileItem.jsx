@@ -10,6 +10,7 @@ import ModalFileDetails from "../modals/ModalFileDetails";
 import { calSize } from "../utils/CalculateFileSize";
 import { ErrorContext, UpdateContext } from "../utils/Contexts";
 import { axiosError, axiosWithCreds } from "../utils/AxiosInstance";
+import { IoMdShare } from "react-icons/io";
 const baseURL = import.meta.env.VITE_BASE_URL;
 
 export default function CompFileItem({
@@ -100,7 +101,7 @@ export default function CompFileItem({
         title={`Name: ${name}\nSize: ${calSize(size)}\nCreated at: ${new Date(
           createdAt
         ).toLocaleString()}`}
-        className={`group flex justify-between border-1 p-2 items-center shadow-sm hover:shadow-md duration-300 bg-clrLightBlue text-clrGray tracking-wider hover:bg-transparent hover:text-black`}
+        className={`group flex justify-between border-1 p-2 items-center shadow-sm hover:shadow-md duration-300 bg-clrLightBlue border-clrLightBlue text-clrGray tracking-wider hover:bg-transparent hover:text-black rounded-sm`}
       >
         <div className={`w-[80%] cursor-pointer items-start`}>
           {rename ? (
@@ -149,6 +150,16 @@ export default function CompFileItem({
               className="cursor-pointer"
             >
               <MdOutlineInfo />
+            </button>
+          </div>
+
+          {/* //* ==========>SHARE  */}
+          <div className="flex gap-2 justify-between">
+            <button
+              onClick={() => console.log(`Share: ${_id} | ${name}`)}
+              className="cursor-pointer"
+            >
+              <IoMdShare />
             </button>
           </div>
 

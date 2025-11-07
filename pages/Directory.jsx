@@ -194,229 +194,220 @@ export default function PageDirectoryView() {
     handleDirectoryDetails(dirID);
   }, [dirID, handleDirectoryDetails]);
 
-  if (contentLoading) {
-    return <HomeLoading />;
-  } else {
-    return (
-      <div className="min-h-screen bg-clrGray border-2 relative overflow-hidden font-google font-medium tracking-wide">
-        {/* //* ==========> MODALS */}
-        <ModalsDiv
-          showCreateFolder={showCreateFolder}
-          setCreateFolder={setCreateFolder}
-          folderID={dirID}
-          handleDirectoryDetails={handleDirectoryDetails}
-        />
-        {/* //* ==========>MAIN CONTENT */}
-        <div className="flex flex-col gap-2">
-          {/* //* ==========>NAVBAR */}
-          <CompNavbar />
-          {/*//* ==========>Folder Path} */}
-          <div className="w-[95%] sm:max-w-3xl md:max-w-4xl mx-auto px-2 shadow-lg hover:shadow-2xl duration-300 rounded-sm h-10 flex items-center overflow-x-auto cursor-grab select-none custom-scrollbar bg-white">
-            <div className="flex items-center whitespace-nowrap">
-              {directoryDetails.path.map((p, index) => (
-                <div key={p.id} className="flex items-center">
-                  <button
-                    className="capitalize truncate max-w-[150px] hover:underline cursor-pointer select-none"
-                    onClick={() => navigate(`/directory/${p.id}`)}
-                    title={
-                      p.name.includes("root") ? p.name.split("-")[0] : p.name
-                    }
-                  >
-                    {p.name.includes("root") ? p.name.split("-")[0] : p.name}
-                  </button>
-                  {index !== directoryDetails.path.length - 1 && (
-                    <span className=" flex-shrink-0">
-                      <IoMdArrowDropright />
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-          {/*//* ==========>Create Folder || Upload File} */}
-          {/*//* ==========>Search file/folder || Import from Drive} */}
-          {/*//* ==========>File and Folders Sort || Files and Folders Count} */}
-          <div className="flex flex-col items-center sm:max-w-3xl md:max-w-4xl w-[95%] gap-2 justify-between mx-auto">
-            <div className="flex w-full shadow-lg rounded-sm bg-white">
-              {/* //* ==========>CREATE FOLDER */}
-              <button
-                className="flex items-center justify-center gap-2 h-10 w-[25%]"
-                title="Create folder"
-                onClick={() => setCreateFolder(true)}
-              >
-                <span className="hover:cursor-pointer text-3xl hover:scale-125 duration-300">
-                  <TiFolderAdd />
-                </span>
-              </button>
-              {/* //* ==========>FILE UPLOAD */}
-              <label
-                htmlFor="fileUpload"
-                className="duration-300 flex items-center justify-center gap-2 h-10 w-[25%]"
-                title="Upload file"
-              >
-                <FaFileUpload
-                  className="hover:cursor-pointer text-2xl hover:scale-125 duration-300"
-                  title="Upload file"
-                />
-                <input
-                  type="file"
-                  onChange={(event) => handleFileSelect(event)}
-                  className="hidden"
-                  id="fileUpload"
-                />
-              </label>
-              {/* //* ==========>GOOGLE DRIVE */}
-              <button
-                className="duration-300 flex items-center justify-center gap-2 h-10 w-[25%]"
-                title="Import from Google Drive"
-              >
-                <span className="hover:cursor-pointer text-2xl hover:scale-125 duration-300">
-                  <FaGoogleDrive />
-                </span>
-              </button>
-              {/* //* ==========>FILES AND FOLDERS */}
-              <div className="group flex justify-center items-center p-1 h-10 w-[25%] gap-5">
-                <h1 className="flex items-center gap-1 ">
-                  <span className="text-2xl">
-                    <RiFoldersFill />
-                  </span>
-                  <span className="group-hover:scale-135 text-md duration-200">
-                    {directoryDetails.foldersCount}
-                  </span>
-                </h1>
-                <h1 className="flex items-center gap-1">
-                  <span className="text-2xl">
-                    <LuFiles />
-                  </span>
-                  <span className="group-hover:scale-135 text-md duration-200">
-                    {directoryDetails.filesCount}
-                  </span>
-                </h1>
-              </div>
-            </div>
-            <div className="flex w-full shadow-lg bg-white rounded-sm">
-              {/* //* ==========>SEARCH SECTION */}
-              <div
-                className="hover:cursor-pointer duration-300 flex items-center justify-center rounded-sm h-10 p-1 w-[60%]"
-                title="Create folder"
-              >
-                <input
-                  type="text"
-                  className=" w-full p-10 outline-none h-full font-bold"
-                  placeholder="Search for file/folder..."
-                />
+  return (
+    <div className="min-h-screen bg-clrGray border-2 relative overflow-hidden font-google font-medium tracking-wide">
+      {/* //* ==========> MODALS */}
+      <ModalsDiv
+        showCreateFolder={showCreateFolder}
+        setCreateFolder={setCreateFolder}
+        folderID={dirID}
+        handleDirectoryDetails={handleDirectoryDetails}
+      />
+      {/* //* ==========>MAIN CONTENT */}
+      <div className="flex flex-col gap-2">
+        {/* //* ==========>NAVBAR */}
+        <CompNavbar />
+        {/*//* ==========>Folder Path} */}
+        <div className="w-[95%] sm:max-w-3xl md:max-w-4xl mx-auto px-2 shadow-lg hover:shadow-2xl duration-300 rounded-sm h-10 flex items-center overflow-x-auto cursor-grab select-none custom-scrollbar bg-white">
+          <div className="flex items-center whitespace-nowrap">
+            {directoryDetails.path.map((p, index) => (
+              <div key={p.id} className="flex items-center">
                 <button
-                  className=" hover:cursor-pointer duration-300 flex items-center justify-center h-full p-10"
-                  title="Search file"
+                  className="capitalize truncate max-w-[150px] hover:underline cursor-pointer select-none"
+                  onClick={() => navigate(`/directory/${p.id}`)}
+                  title={
+                    p.name.includes("root") ? p.name.split("-")[0] : p.name
+                  }
                 >
-                  <FaSearch />
+                  {p.name.includes("root") ? p.name.split("-")[0] : p.name}
                 </button>
+                {index !== directoryDetails.path.length - 1 && (
+                  <span className=" flex-shrink-0">
+                    <IoMdArrowDropright />
+                  </span>
+                )}
               </div>
-              {/* //* ==========>SORTING */}
-              <div className="flex justify-start items-center w-[20%] gap-2">
-                <label htmlFor="sort" className="flex items-center w-full">
-                  <FaSortAmountDown />
-                  <select
-                    id="sort"
-                    name="sort"
-                    className="text-center outline-none cursor-pointer h-full"
-                  >
-                    <option value="size_inc">Size (Inc)</option>
-                    <option value="size_dec">Size (Dec)</option>
-                    <option value="name_asc">Name (Asc)</option>
-                    <option value="name_desc">Name (Desc)</option>
-                    <option value="last_modified_asc">
-                      Last Modified (Asc)
-                    </option>
-                    <option value="last_modified_desc">
-                      Last Modified (Desc)
-                    </option>
-                  </select>
-                </label>
-              </div>
-              {/* //* ==========>VIEW CHANGE */}
-              <div className="w-[20%] flex justify-center gap-8">
-                <button className="cursor-pointer hover:scale-125 duration-300">
-                  <FaList />
-                </button>
-                <button className="cursor-pointer hover:scale-125 duration-300">
-                  <MdGridView />
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
-          {/* //* ==========>FOLDERS AND FILES  */}
-          {directoryDetails.foldersCount < 1 &&
-          directoryDetails.filesCount < 1 ? (
-            <div>
-              <h1 className="text-center text-2xl mt-4">
-                No files or folders found !
+        </div>
+        {/*//* ==========>Create Folder || Upload File} */}
+        {/*//* ==========>Search file/folder || Import from Drive} */}
+        {/*//* ==========>File and Folders Sort || Files and Folders Count} */}
+        <div className="flex flex-col items-center sm:max-w-3xl md:max-w-4xl w-[95%] gap-2 justify-between mx-auto">
+          <div className="flex w-full shadow-lg rounded-sm bg-white">
+            {/* //* ==========>CREATE FOLDER */}
+            <button
+              className="flex items-center justify-center gap-2 h-10 w-[25%]"
+              title="Create folder"
+              onClick={() => setCreateFolder(true)}
+            >
+              <span className="hover:cursor-pointer text-3xl hover:scale-125 duration-300">
+                <TiFolderAdd />
+              </span>
+            </button>
+            {/* //* ==========>FILE UPLOAD */}
+            <label
+              htmlFor="fileUpload"
+              className="duration-300 flex items-center justify-center gap-2 h-10 w-[25%]"
+              title="Upload file"
+            >
+              <FaFileUpload
+                className="hover:cursor-pointer text-2xl hover:scale-125 duration-300"
+                title="Upload file"
+              />
+              <input
+                type="file"
+                onChange={(event) => handleFileSelect(event)}
+                className="hidden"
+                id="fileUpload"
+              />
+            </label>
+            {/* //* ==========>GOOGLE DRIVE */}
+            <button
+              className="duration-300 flex items-center justify-center gap-2 h-10 w-[25%]"
+              title="Import from Google Drive"
+            >
+              <span className="hover:cursor-pointer text-2xl hover:scale-125 duration-300">
+                <FaGoogleDrive />
+              </span>
+            </button>
+            {/* //* ==========>FILES AND FOLDERS */}
+            <div className="group flex justify-center items-center p-1 h-10 w-[25%] gap-5">
+              <h1 className="flex items-center gap-1 ">
+                <span className="text-2xl">
+                  <RiFoldersFill />
+                </span>
+                <span className="group-hover:scale-135 text-md duration-200">
+                  {directoryDetails.foldersCount}
+                </span>
+              </h1>
+              <h1 className="flex items-center gap-1">
+                <span className="text-2xl">
+                  <LuFiles />
+                </span>
+                <span className="group-hover:scale-135 text-md duration-200">
+                  {directoryDetails.filesCount}
+                </span>
               </h1>
             </div>
-          ) : (
-            <div className="flex flex-col w-[95%] sm:max-w-3xl md:max-w-4xl mx-auto">
-              <div className="p-2">
-                {/* //* ==========>DISPLAY FOLDERS */}
-                <div id="list" className="flex flex-col w-full mx-auto gap-2">
-                  {directoryDetails.folders.map((directory) => {
-                    return (
-                      <CompFolderItem
-                        key={directory._id}
-                        {...directory}
-                        handleDirectoryDetails={handleDirectoryDetails}
-                        handleUserStorageDetails={handleUserStorageDetails}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="p-2">
-                {/* //* ==========>DISPLAY FILES */}
-                <div id="list" className={`flex flex-col w-full mx-auto gap-2`}>
-                  {directoryDetails.files.map((listItem) => (
-                    <CompFileItem
-                      key={listItem._id}
-                      {...listItem}
+          </div>
+          <div className="flex w-full shadow-lg bg-white rounded-sm">
+            {/* //* ==========>SEARCH SECTION */}
+            <div
+              className="hover:cursor-pointer duration-300 flex items-center justify-center rounded-sm h-10 p-1 w-[60%]"
+              title="Create folder"
+            >
+              <input
+                type="text"
+                className=" w-full p-10 outline-none h-full font-bold"
+                placeholder="Search for file/folder..."
+              />
+              <button
+                className=" hover:cursor-pointer duration-300 flex items-center justify-center h-full p-10"
+                title="Search file"
+              >
+                <FaSearch />
+              </button>
+            </div>
+            {/* //* ==========>SORTING */}
+            <div className="flex justify-start items-center w-[20%] gap-2">
+              <label htmlFor="sort" className="flex items-center w-full">
+                <FaSortAmountDown />
+                <select
+                  id="sort"
+                  name="sort"
+                  className="text-center outline-none cursor-pointer h-full"
+                >
+                  <option value="size_inc">Size (Inc)</option>
+                  <option value="size_dec">Size (Dec)</option>
+                  <option value="name_asc">Name (Asc)</option>
+                  <option value="name_desc">Name (Desc)</option>
+                  <option value="last_modified_asc">Last Modified (Asc)</option>
+                  <option value="last_modified_desc">
+                    Last Modified (Desc)
+                  </option>
+                </select>
+              </label>
+            </div>
+            {/* //* ==========>VIEW CHANGE */}
+            <div className="w-[20%] flex justify-center gap-8">
+              <button className="cursor-pointer hover:scale-125 duration-300">
+                <FaList />
+              </button>
+              <button className="cursor-pointer hover:scale-125 duration-300">
+                <MdGridView />
+              </button>
+            </div>
+          </div>
+        </div>
+        {/* //* ==========>FOLDERS AND FILES  */}
+        {directoryDetails.foldersCount < 1 &&
+        directoryDetails.filesCount < 1 ? (
+          <div>
+            <h1 className="text-center text-2xl mt-4">
+              No files or folders found !
+            </h1>
+          </div>
+        ) : (
+          <div className="flex flex-col w-[95%] sm:max-w-3xl md:max-w-4xl mx-auto">
+            <div className="p-2">
+              {/* //* ==========>DISPLAY FOLDERS */}
+              <div id="list" className="flex flex-col w-full mx-auto gap-2">
+                {directoryDetails.folders.map((directory) => {
+                  return (
+                    <CompFolderItem
+                      key={directory._id}
+                      {...directory}
                       handleDirectoryDetails={handleDirectoryDetails}
                       handleUserStorageDetails={handleUserStorageDetails}
                     />
-                  ))}
-                </div>
-              </div>
-              {/* //* ==========>UPLOADING FILE */}
-              <div className="p-2">
-                <div>
-                  {tempUpload && uploadFile && (
-                    <div className="bg-clrYellow mt-2 b p-2 flex flex-col gap-2 shadow-2xl ">
-                      <div className="flex justify-between">
-                        <h1>{uploadFile.name}</h1>
-                        <h1>{calSize(uploadFile.size)}</h1>
-                        <h1>Upload Progress: {uploadPrg}%</h1>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <div className="bg-black p-[2px] w-full ">
-                          <div
-                            className="p-[1px] bg-clrWhite"
-                            style={{
-                              width: `${uploadPrg}%`,
-                            }}
-                          ></div>
-                        </div>
-                        <button
-                          className=" cursor-pointer"
-                          title="Cancel upload"
-                        >
-                          <MdCancel />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                  );
+                })}
               </div>
             </div>
-          )}
-        </div>
+            <div className="p-2">
+              {/* //* ==========>DISPLAY FILES */}
+              <div id="list" className={`flex flex-col w-full mx-auto gap-2`}>
+                {directoryDetails.files.map((listItem) => (
+                  <CompFileItem
+                    key={listItem._id}
+                    {...listItem}
+                    handleDirectoryDetails={handleDirectoryDetails}
+                    handleUserStorageDetails={handleUserStorageDetails}
+                  />
+                ))}
+              </div>
+            </div>
+            {/* //* ==========>UPLOADING FILE */}
+            <div className="p-2">
+              <div>
+                {tempUpload && uploadFile && (
+                  <div className="bg-clrYellow mt-2 b p-2 flex flex-col gap-2 shadow-2xl ">
+                    <div className="flex justify-between">
+                      <h1>{uploadFile.name}</h1>
+                      <h1>{calSize(uploadFile.size)}</h1>
+                      <h1>Upload Progress: {uploadPrg}%</h1>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="bg-black p-[2px] w-full ">
+                        <div
+                          className="p-[1px] bg-clrWhite"
+                          style={{
+                            width: `${uploadPrg}%`,
+                          }}
+                        ></div>
+                      </div>
+                      <button className=" cursor-pointer" title="Cancel upload">
+                        <MdCancel />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    );
-  }
+    </div>
+  );
 }

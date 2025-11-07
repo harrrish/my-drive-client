@@ -4,6 +4,7 @@ import { calDateNTime } from "../utils/CalculateDateTime";
 import { IoMdArrowDropright } from "react-icons/io";
 import { useContext } from "react";
 import { DirectoryContext } from "../utils/Contexts";
+import { RiFolderInfoFill } from "react-icons/ri";
 
 export default function ModalFolderDetails({
   setFolderDetails,
@@ -20,7 +21,12 @@ export default function ModalFolderDetails({
     <div className="fixed inset-0 z-50 w-full min-h-[100vh] bg-black/90 flex items-center justify-center">
       <div className="w-[90%] sm:max-w-2xl p-4 bg-white rounded-sm">
         <div className="flex items-center justify-between p-2 bg-clrDarkGreen text-white">
-          <h1 className="">Folder Details</h1>
+          <h1 className="flex items-center gap-1">
+            <span>
+              <RiFolderInfoFill />
+            </span>
+            Folder Details
+          </h1>
           <button
             className="cursor-pointer"
             onClick={() => setFolderDetails(false)}

@@ -39,7 +39,7 @@ export default function CompUserStorage() {
     <div className="flex flex-col gap-2 my-1 mx-auto rounded-sm items-center">
       {/* //* ==========>STORAGE */}
       <div className="w-full flex items-center mx-auto gap-2">
-        <div className="bg-clrLightBlue p-[2px] w-[80%] ">
+        <div className="bg-black p-[2px] w-[80%] ">
           <div
             className="p-[1px] bg-clrWhite"
             style={{
@@ -57,30 +57,39 @@ export default function CompUserStorage() {
       <div className="flex flex-col sm:flex-row gap-2 w-full items-center">
         <button
           onClick={() => navigate("/profile")}
-          className="border-1 flex justify-center items-center gap-1 h-8 cursor-pointer w-1/2 hover:text-white hover:bg-clrDarkGreen tracking-wider hover:font-bold duration-300 rounded-full"
+          className="group px-3 border-1 flex justify-between items-center gap-1 h-8 cursor-pointer w-full sm:w-1/2 tracking-wider duration-300 rounded-full"
         >
+          <span className="text-sm group-hover:scale-150 duration-150">
+            <FaUser />
+          </span>
           Profile
-          <FaUser />
         </button>
         <button
           onClick={() => navigate("/bin")}
-          className="border-1 flex justify-center items-center gap-1 h-8 cursor-pointer w-1/2 hover:text-white hover:bg-clrRed tracking-wider hover:font-bold duration-300 rounded-full"
+          className="group px-3 border-1 flex justify-between items-center gap-1 h-8 cursor-pointer w-full sm:w-1/2 tracking-wider duration-300 rounded-full"
         >
+          <span className="text-sm group-hover:scale-150 duration-150">
+            <FaTrash />
+          </span>
           Trash
-          <FaTrash />
         </button>
         <button
           onClick={() => navigate("/purchase-premium")}
-          className="border-1 flex justify-center items-center gap-1 h-8 cursor-pointer w-1/2 hover:text-white hover:bg-clrLightBlue tracking-wider hover:font-bold duration-300 rounded-full"
+          className="group px-3 border-1 flex justify-between items-center gap-1 h-8 cursor-pointer w-full sm:w-1/2 tracking-wider duration-300 rounded-full"
         >
+          <span className="text-sm group-hover:scale-150 duration-150">
+            <BiSolidPurchaseTag />
+          </span>
           Buy Premium
-          <BiSolidPurchaseTag />
         </button>
         <button
-          className="border-1 flex justify-center items-center gap-1 h-8 cursor-pointer w-1/2 hover:text-white hover:bg-clrRed tracking-wider hover:font-bold duration-300 rounded-full"
+          className="group px-3 border-1 flex justify-between items-center gap-1 h-8 cursor-pointer w-full sm:w-1/2 tracking-wider duration-300 rounded-full"
           onClick={handleLogout}
         >
-          {logout ? "Logging out..." : "Logout"} <IoLogOut />
+          <span className="text-sm group-hover:scale-150 duration-150">
+            <IoLogOut />
+          </span>{" "}
+          {logout ? "Logging out..." : "Logout"}
         </button>
       </div>
     </div>

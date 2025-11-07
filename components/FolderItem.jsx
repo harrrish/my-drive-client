@@ -101,7 +101,7 @@ export default function CompFolderItem({
       <div
         key={_id}
         title={`Size: ${calSize(size)}`}
-        className={`flex justify-between p-2 items-center shadow-md hover:shadow-lg border-1 duration-300 bg-clrDarkGreen text-clrGray tracking-wider hover:bg-transparent hover:text-black`}
+        className={`flex justify-between p-2 items-center shadow-md hover:shadow-lg border-1 duration-300 bg-clrDarkGreen border-clrDarkGreen text-clrGray tracking-wider hover:bg-transparent hover:text-black rounded-sm`}
       >
         <div className={`w-[80%] cursor-pointer `}>
           {rename ? (

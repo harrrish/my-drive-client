@@ -11,8 +11,8 @@ export default function PageUserLogin() {
   const [login, setLogin] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    email: "alpha@gmail.com",
-    password: "Qwerty@12345",
+    email: "",
+    password: "",
   });
   //* ==========>HANDLING FORM CHANGE
   const handleChange = (e) => {
@@ -65,7 +65,7 @@ export default function PageUserLogin() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Useremail@abc.com"
+              placeholder="harrrish1906@gmail.com"
               className={`w-full px-3 py-2 border-2 shadow-sm focus:outline-blue-400`}
             />
           </div>
@@ -97,7 +97,7 @@ export default function PageUserLogin() {
             <button
               type="button"
               onClick={handleLogin}
-              className={`w-full py-2 px-4 border-2 cursor-pointer shadow-sm focus:outline-none hover:bg-clrLightBlue hover:text-white`}
+              className={`w-full py-2 px-4 border-2 cursor-pointer shadow-sm focus:outline-blue-400 hover:bg-clrLightBlue hover:text-white`}
             >
               {login ? "Logging in..." : "Login"}
             </button>

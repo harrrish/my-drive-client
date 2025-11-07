@@ -60,12 +60,12 @@ export default function ModalCreateFolder({
           <div className="flex justify-between">
             <button
               onClick={handleCreateFolder}
-              className=" border-2 rounded-sm hover:bg-clrDarkBlue focus:bg-clrDarkBlue hover:text-white focus:text-white px-2 w-[45%] cursor-pointer transition-all transition-300"
+              className=" border-2 rounded-sm hover:bg-clrDarkBlue focus:outline-blue-400 hover:text-white px-2 w-[45%] cursor-pointer transition-all transition-300"
             >
               {createLoad ? "Creating..." : "Create"}
             </button>
             <button
-              className=" border-2 rounded-sm hover:bg-clrRed focus:bg-clrRed hover:text-white focus:text-white px-2 w-[45%] cursor-pointer transition-all transition-300"
+              className=" border-2 rounded-sm hover:bg-clrRed focus:outline-red-400 hover:text-white px-2 w-[45%] cursor-pointer transition-all transition-300"
               onClick={() => setCreateFolder(false)}
             >
               Cancel
