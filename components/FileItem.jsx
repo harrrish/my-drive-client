@@ -46,7 +46,7 @@ export default function CompFileItem({
           {
             newName: `${itemName}${extension}`,
             basename: itemName,
-          }
+          },
         );
         console.log(data.message);
         if (status === 201) {
@@ -66,7 +66,7 @@ export default function CompFileItem({
   async function handleFileDelete() {
     try {
       const { data, status } = await axiosWithCreds.delete(
-        `/file/${_id || ""}`
+        `/file/${_id || ""}`,
       );
       console.log(data.message);
       if (status === 201) {
@@ -99,11 +99,11 @@ export default function CompFileItem({
       <div
         key={_id}
         title={`Name: ${name}\nSize: ${calSize(size)}\nCreated at: ${new Date(
-          createdAt
+          createdAt,
         ).toLocaleString()}`}
         className={`group flex justify-between border-1 p-2 items-center shadow-sm hover:shadow-md duration-300 bg-clrLightBlue border-clrLightBlue text-clrGray tracking-wider hover:bg-transparent hover:text-black rounded-sm`}
       >
-        <div className={`w-[80%] cursor-pointer items-start`}>
+        <div className={`w-[70%] cursor-pointer items-start`}>
           {rename ? (
             <div className="flex items-center gap-2">
               <span>
@@ -128,7 +128,7 @@ export default function CompFileItem({
                 window.open(
                   `${baseURL}/file/${_id}`,
                   "_blank",
-                  "noopener,noreferrer"
+                  "noopener,noreferrer",
                 );
               }}
               className="truncate flex items-center gap-2"
@@ -142,7 +142,7 @@ export default function CompFileItem({
         </div>
 
         {/* //* ==========>SETTING */}
-        <div className="flex w-[50%] justify-between">
+        <div className="flex w-[30%] justify-between">
           {/* //* ==========>VIEW FILE DETAILS  */}
           <div className="flex gap-2 justify-between">
             <button

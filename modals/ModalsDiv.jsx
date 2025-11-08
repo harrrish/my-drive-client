@@ -19,7 +19,7 @@ export default function ModalsDiv({
           <h1
             key={index}
             style={{ bottom: `${index * 3 + 2}rem`, right: "0" }}
-            className="absolute z-50 py-2 px-8 animate-slide bg-clrDarkGreen text-white tracking-wide"
+            className="max-w-1/2 absolute z-50 py-2 px-8 animate-slide bg-clrDarkGreen text-white tracking-wide"
           >
             {u} !
           </h1>
@@ -28,8 +28,8 @@ export default function ModalsDiv({
         error.map((e, index) => (
           <h1
             key={index}
-            style={{ bottom: `${index * 3 + 2}rem`, right: "0" }}
-            className="absolute z-50 py-2 px-8 animate-slide bg-clrRed text-white tracking-wide"
+            style={{ top: `${index * 3 + 4}rem`, right: "0" }}
+            className="max-w-1/2 absolute z-50 py-2 px-8 animate-slide bg-clrRed text-white tracking-wide"
           >
             {e} !
           </h1>

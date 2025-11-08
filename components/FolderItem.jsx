@@ -48,7 +48,7 @@ export default function CompFolderItem({
       try {
         const { data, status } = await axiosWithCreds.patch(
           `/directory/${_id || ""}`,
-          { folderName: directoryName }
+          { folderName: directoryName },
         );
         if (status === 201) {
           setFolderID(parentFID);
@@ -67,7 +67,7 @@ export default function CompFolderItem({
   async function handleDeleteFolder() {
     try {
       const { data, status } = await axiosWithCreds.delete(
-        `/directory/${_id || ""}`
+        `/directory/${_id || ""}`,
       );
       if (status === 201) {
         setFolderID(parentFID);
@@ -103,7 +103,7 @@ export default function CompFolderItem({
         title={`Size: ${calSize(size)}`}
         className={`flex justify-between p-2 items-center shadow-md hover:shadow-lg border-1 duration-300 bg-clrDarkGreen border-clrDarkGreen text-clrGray tracking-wider hover:bg-transparent hover:text-black rounded-sm`}
       >
-        <div className={`w-[80%] cursor-pointer `}>
+        <div className={`w-[70%] cursor-pointer `}>
           {rename ? (
             <div className="flex items-center gap-2">
               <span>
@@ -122,7 +122,7 @@ export default function CompFolderItem({
           ) : (
             <Link
               to={`/directory/${_id}`}
-              className="truncate capitalize flex items-center gap-2"
+              className="truncate capitalize flex items-center gap-2 w-[95%]"
             >
               <span>
                 <FaFolder />

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   DirectoryContext,
@@ -7,12 +7,11 @@ import {
   UserStorageContext,
 } from "../utils/Contexts.js";
 import { axiosError, axiosWithCreds } from "../utils/AxiosInstance.js";
-import { calSize } from "../utils/CalculateFileSize.js";
 import CompNavbar from "../components/NavbarHome.jsx";
 import CompFileItem from "../components/FileItem.jsx";
 import CompFolderItem from "../components/FolderItem.jsx";
 import ModalsDiv from "../modals/ModalsDiv.jsx";
-import { MdCancel, MdGridView } from "react-icons/md";
+import { MdGridView } from "react-icons/md";
 import { TiFolderAdd } from "react-icons/ti";
 import { FaFileUpload, FaSearch, FaSortAmountDown } from "react-icons/fa";
 import { LuFiles } from "react-icons/lu";
@@ -24,6 +23,7 @@ import {
   uploadSingleFile,
 } from "../utils/UploadSingleFile.js";
 import { BiFolderOpen } from "react-icons/bi";
+import UploadFile from "../components/UploadFile.jsx";
 
 export default function PageDirectoryView() {
   const { dirID } = useParams();
@@ -34,9 +34,6 @@ export default function PageDirectoryView() {
   const { setUserStorage } = useContext(UserStorageContext);
   const { directoryDetails, setDirectoryDetails } =
     useContext(DirectoryContext);
-
-  const [uploadFile, setUploadFile] = useState([]);
-  const [isUploading, setUploading] = useState(false);
 
   //* ==========> FETCHING USER STORAGE DETAILS
   const handleUserStorageDetails = useCallback(async () => {
@@ -60,7 +57,6 @@ export default function PageDirectoryView() {
     async (dirID) => {
       try {
         const { data } = await axiosWithCreds.get(`/directory/${dirID || ""}`);
-        // console.log(data);
         setDirectoryDetails({ ...data });
         handleUserStorageDetails();
       } catch (error) {
@@ -68,77 +64,62 @@ export default function PageDirectoryView() {
         axiosError(error, navigate, setError, msg);
       }
     },
-    [setDirectoryDetails, setError, handleUserStorageDetails, navigate]
+    [setDirectoryDetails, setError, handleUserStorageDetails, navigate],
   );
+
+  const [uploadFilesList, setUploadFilesList] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+
+  async function handleFilesUpload(event) {
+    if (isUploading) {
+      setError((prev) => [...prev, "Upload in progress, Please wait"]);
+      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
+      event.target.value = "";
+    } else {
+      const filesList = event.target.files;
+      if (filesList < 1) return;
+      setIsUploading(true);
+      const uploadFilesList = Array.from(filesList).map((file) => ({
+        file,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        id: crypto.randomUUID(),
+        isUploading: true,
+        progress: 0,
+      }));
+      // console.log({ uploadFilesList });
+      setUploadFilesList(uploadFilesList);
+
+      for await (const listItem of uploadFilesList) {
+        const { status, fileID, uploadSignedUrl } = await uploadSingleFile(
+          listItem,
+          dirID,
+          navigate,
+          setError,
+        );
+        if (status === 200) {
+          await startSingleUpload(
+            dirID,
+            listItem,
+            uploadSignedUrl,
+            fileID,
+            handleDirectoryDetails,
+            navigate,
+            setError,
+            setUpdate,
+            setUploadFilesList,
+          );
+        }
+      }
+      event.target.value = "";
+      setIsUploading(false);
+    }
+  }
 
   useEffect(() => {
     handleDirectoryDetails(dirID);
   }, [handleDirectoryDetails, dirID]);
-
-  //* ==========> Handling file select and getting upload URL
-  async function handleFileUpload(event) {
-    setUploading(true);
-    //* ==========> Returning if upload in progress
-    if (isUploading) {
-      setError((prev) => [...prev, "An upload in progress. Please wait"]);
-      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
-      event.target.value = "";
-      return;
-    }
-    const files = event.target.files;
-
-    //* ==========> Returning if none selected
-    if (files.length < 1) return;
-
-    //* ==========> Creating files for upload
-
-    const uploadList = Array.from(files).map((file) => ({
-      file,
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      id: crypto.randomUUID(),
-      isUploading: true,
-      progress: 0,
-    }));
-
-    setUploadFile(uploadList);
-
-    function updateFileProgress(id, progress) {
-      setUploadFile((prev) =>
-        prev.map((file) => (file.id === id ? { ...file, progress } : file))
-      );
-    }
-
-    for (const listItem of uploadList) {
-      console.log(listItem);
-      const responseInitiate = await uploadSingleFile(
-        listItem,
-        dirID,
-        navigate,
-        setError
-      );
-      const { fileID, uploadSignedUrl } = responseInitiate;
-      await startSingleUpload(
-        dirID,
-        listItem,
-        uploadSignedUrl,
-        fileID,
-        handleDirectoryDetails,
-        navigate,
-        setError,
-        setUpdate,
-        updateFileProgress,
-        setUploading,
-        reloadState
-      );
-    }
-
-    function reloadState() {
-      setUploadFile([]);
-      setUploading(false);
-    }
-  }
 
   return (
     <div className="min-h-screen bg-clrGray border-2 relative overflow-hidden font-google font-medium tracking-wide">
@@ -203,7 +184,8 @@ export default function PageDirectoryView() {
               />
               <input
                 type="file"
-                onChange={(event) => handleFileUpload(event)}
+                multiple
+                onChange={(event) => handleFilesUpload(event)}
                 className="hidden"
                 id="fileUpload"
               />
@@ -330,23 +312,11 @@ export default function PageDirectoryView() {
             </div>
           </div>
         )}
-        {isUploading && uploadFile.length > 0 && (
+        {isUploading && uploadFilesList.length > 0 && (
           <div className="flex flex-col gap-2">
             {/* //* ==========> Uploading FILE */}
-            {uploadFile.map((file) => (
-              <div
-                key={file.id}
-                className="border-2 flex flex-col gap-8 p-2 rounded-sm w-[95%] mx-auto"
-              >
-                <div className="flex justify-between w-full">
-                  <h1 className="w-1/3 truncate">{file.name}</h1>
-                  <h1>{calSize(file.size)}</h1>
-                  <h1>Upload progress: {file.progress}%</h1>
-                  <button className="cursor-pointer hover:scale-150 duration-200">
-                    <MdCancel />
-                  </button>
-                </div>
-              </div>
+            {uploadFilesList.map((file) => (
+              <UploadFile key={file.id} {...file} />
             ))}
           </div>
         )}
