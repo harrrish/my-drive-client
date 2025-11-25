@@ -1,7 +1,6 @@
 import { useState, useContext } from "react";
 import { ErrorContext, UpdateContext } from "../utils/Contexts.js";
 import { axiosError, axiosWithCreds } from "../utils/AxiosInstance.js";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export default function ModalCreateFolder({
@@ -27,7 +26,7 @@ export default function ModalCreateFolder({
           `/directory/${folderID || ""}`,
           {
             folderName,
-          }
+          },
         );
         if (status === 201) {
           setUpdate((prev) => [...prev, data.message]);

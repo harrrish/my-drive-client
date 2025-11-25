@@ -13,8 +13,8 @@ export async function uploadSingleFile(listItem, dirID, navigate, setError) {
       return { status, uploadSignedUrl, fileID };
     }
   } catch (error) {
-    const msg = "Failed to initiate file upload";
-    axiosError(error, navigate, setError, msg);
+    constmessage = "Failed to initiate file upload";
+    axiosError(error, navigate, setError, message);
   }
 }
 
@@ -56,8 +56,8 @@ export async function startSingleUpload(
       handleDirectoryDetails(dirID);
     }
   } catch (error) {
-    const msg = "Failed to upload file";
-    axiosError(error, navigate, setError, msg);
+    constmessage = "Failed to upload file";
+    axiosError(error, navigate, setError, message);
     handleDirectoryDetails(dirID);
   }
 }

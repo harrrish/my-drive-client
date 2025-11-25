@@ -8,10 +8,10 @@ import { axiosError, axiosWithOutCreds } from "../utils/AxiosInstance";
 export default function PageUserRegister() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    username: "",
-    password: "",
+    name: "alpha",
+    email: "alpha@gmail.com",
+    password: "1234567890",
+    username: "alpha@123",
     otp: "",
   });
   const handleChange = (e) => {
@@ -37,9 +37,13 @@ export default function PageUserRegister() {
   //* ==========> REQUEST OTP
   async function handleRequestOTP() {
     setRequestLoad(true);
-    const { email } = formData;
+    const { email, username } = formData;
     if (!email.trim()) {
       setError((prev) => [...prev, "Invalid Email"]);
+      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
+      setRequestLoad(false);
+    } else if (!username.trim()) {
+      setError((prev) => [...prev, "Invalid Username"]);
       setTimeout(() => setError((prev) => prev.slice(1)), 3000);
       setRequestLoad(false);
     } else {
@@ -105,10 +109,10 @@ export default function PageUserRegister() {
       try {
         const { data } = await axiosWithOutCreds.post(
           "/user/register",
-          formData
+          formData,
         );
         console.log(data.message);
-        navigate("/login");
+        navigate(`/create-username/${formData.email}`);
         setRegisterLoad(false);
       } catch (error) {
         setRequestOTP(false);
@@ -136,11 +140,11 @@ export default function PageUserRegister() {
 
   return (
     <div className="min-h-[100vh] flex justify-center items-center font-google bg-clrGray">
-      <div className="w-[90%] sm:max-w-md mx-auto p-6 shadow-lg flex flex-col gap-4 rounded-sm bg-white">
+      <div className="w-[90%] sm:max-w-md mx-auto p-6 shadow-lg flex flex-col gap-2 rounded-sm bg-white">
         {/* //* ==========>NAVBAR */}
         <CompRegisterNav />
 
-        <div className="flex flex-col gap-4 font-medium tracking-wide">
+        <div className="flex flex-col gap-2 font-medium tracking-wide">
           {/* //* ==========>FULL NAME */}
           <div className="flex flex-col gap-1">
             <label htmlFor="name" className="block">
@@ -156,9 +160,10 @@ export default function PageUserRegister() {
               className={`w-full px-3 py-2 border-2 shadow-sm focus:outline-blue-400`}
             />
           </div>
+
           {/* //* ==========>USERNAME */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="username" className="block">
+            <label htmlFor="username" className="block ">
               Username
             </label>
             <input
@@ -166,11 +171,12 @@ export default function PageUserRegister() {
               id="username"
               name="username"
               value={formData.username}
-              onChange={handleChange}
               placeholder="harrrish"
+              onChange={handleChange}
               className={`w-full px-3 py-2 border-2 shadow-sm focus:outline-blue-400`}
             />
           </div>
+
           {/* //* ==========>EMAIL */}
           <div className="flex flex-col gap-1 items-start">
             <label htmlFor="email" className="">
@@ -237,15 +243,15 @@ export default function PageUserRegister() {
 
           {/* //* ==========>ERROR */}
           {error && (
-            <h1 className="text-center p-1 bg-red-600 text-white transform transition-all duration-500 ease-in-out opacity-0 animate-[fadeInOut_3s_ease-in-out]">
-              {error} !
+            <h1 className="text-center bg-red-600 text-white transform transition-all duration-500">
+              {error}
             </h1>
           )}
 
           {/* //* ==========>UPDATE */}
           {update && (
-            <h1 className="text-center p-1 bg-green-600 text-white transform transition-all duration-500 ease-in-out opacity-0 animate-[fadeInOut_3s_ease-in-out]">
-              {update} !
+            <h1 className="text-center bg-green-600 text-white transform transition-all duration-500">
+              {update}
             </h1>
           )}
 
