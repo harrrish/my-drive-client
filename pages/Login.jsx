@@ -12,7 +12,7 @@ export default function PageUserLogin() {
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "alpha@gmail.com",
-    password: "Qwerty@12345",
+    password: "1234567890",
   });
   //* ==========>HANDLING FORM CHANGE
   const handleChange = (e) => {
