@@ -94,19 +94,27 @@ export default function PageUserRegister() {
   //* ==========> REGISTER USER
   async function handleRegister() {
     setRegisterLoad(true);
-    try {
-      const { name, email, password, otp } = formData;
-      if (!name.trim() || !email.trim() || !password.trim() || !otp.trim()) {
-        setEnableRegister(false);
-        setError((prev) => [...prev, "Invalid Credentials"]);
-        setTimeout(() => setError((prev) => prev.slice(1)), 3000);
+    const { name, email, password, otp } = formData;
+    if (!name.trim() || !email.trim() || !password.trim() || !otp.trim()) {
+      setEnableRegister(false);
+      setError((prev) => [...prev, "Invalid Credentials"]);
+      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
+      setRegisterLoad(false);
+    } else {
+      try {
+        const { data } = await axiosWithOutCreds.post(
+          "/user/register",
+          formData,
+        );
+        console.log(data.message);
+        navigate(`/login`);
+        setRegisterLoad(false);
+      } catch (error) {
+        setRequestOTP(false);
+        const msg = "Failed to register user";
+        axiosError(error, navigate, setError, msg);
         setRegisterLoad(false);
       }
-    } catch (error) {
-      setRequestOTP(false);
-      const msg = "Failed to register user";
-      axiosError(error, navigate, setError, msg);
-      setRegisterLoad(false);
     }
   }
 
