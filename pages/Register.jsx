@@ -11,7 +11,6 @@ export default function PageUserRegister() {
     name: "alpha",
     email: "alpha@gmail.com",
     password: "1234567890",
-    username: "alpha@123",
     otp: "",
   });
   const handleChange = (e) => {
@@ -37,13 +36,9 @@ export default function PageUserRegister() {
   //* ==========> REQUEST OTP
   async function handleRequestOTP() {
     setRequestLoad(true);
-    const { email, username } = formData;
+    const { email } = formData;
     if (!email.trim()) {
       setError((prev) => [...prev, "Invalid Email"]);
-      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
-      setRequestLoad(false);
-    } else if (!username.trim()) {
-      setError((prev) => [...prev, "Invalid Username"]);
       setTimeout(() => setError((prev) => prev.slice(1)), 3000);
       setRequestLoad(false);
     } else {
@@ -99,27 +94,19 @@ export default function PageUserRegister() {
   //* ==========> REGISTER USER
   async function handleRegister() {
     setRegisterLoad(true);
-    const { name, email, password, otp } = formData;
-    if (!name.trim() || !email.trim() || !password.trim() || !otp.trim()) {
-      setEnableRegister(false);
-      setError((prev) => [...prev, "Invalid Credentials"]);
-      setTimeout(() => setError((prev) => prev.slice(1)), 3000);
-      setRegisterLoad(false);
-    } else {
-      try {
-        const { data } = await axiosWithOutCreds.post(
-          "/user/register",
-          formData,
-        );
-        console.log(data.message);
-        navigate(`/create-username/${formData.email}`);
-        setRegisterLoad(false);
-      } catch (error) {
-        setRequestOTP(false);
-        const msg = "Failed to register user";
-        axiosError(error, navigate, setError, msg);
+    try {
+      const { name, email, password, otp } = formData;
+      if (!name.trim() || !email.trim() || !password.trim() || !otp.trim()) {
+        setEnableRegister(false);
+        setError((prev) => [...prev, "Invalid Credentials"]);
+        setTimeout(() => setError((prev) => prev.slice(1)), 3000);
         setRegisterLoad(false);
       }
+    } catch (error) {
+      setRequestOTP(false);
+      const msg = "Failed to register user";
+      axiosError(error, navigate, setError, msg);
+      setRegisterLoad(false);
     }
   }
 
@@ -157,22 +144,6 @@ export default function PageUserRegister() {
               value={formData.name}
               onChange={handleChange}
               placeholder="Harish S"
-              className={`w-full px-3 py-2 border-2 shadow-sm focus:outline-blue-400`}
-            />
-          </div>
-
-          {/* //* ==========>USERNAME */}
-          <div className="flex flex-col gap-1">
-            <label htmlFor="username" className="block ">
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              placeholder="harrrish"
-              onChange={handleChange}
               className={`w-full px-3 py-2 border-2 shadow-sm focus:outline-blue-400`}
             />
           </div>
