@@ -57,7 +57,7 @@ export default function CompUserStorage() {
       <div className="flex flex-col sm:flex-row gap-2 w-full items-center">
         <button
           onClick={() => navigate("/profile")}
-          className="group px-3 border-1 flex justify-between items-center gap-1 h-8 cursor-pointer w-full sm:w-1/2 tracking-wider duration-300 rounded-full"
+          className="group px-3 border-1 flex justify-between items-center gap-1 h-8 cursor-pointer w-full sm:w-1/2 tracking-wider duration-300 rounded-sm"
         >
           <span className="text-sm group-hover:scale-150 duration-150">
             <FaUser />
@@ -66,7 +66,7 @@ export default function CompUserStorage() {
         </button>
         <button
           onClick={() => navigate("/bin")}
-          className="group px-3 border-1 flex justify-between items-center gap-1 h-8 cursor-pointer w-full sm:w-1/2 tracking-wider duration-300 rounded-full"
+          className="group px-3 border-1 flex justify-between items-center gap-1 h-8 cursor-pointer w-full sm:w-1/2 tracking-wider duration-300 rounded-sm"
         >
           <span className="text-sm group-hover:scale-150 duration-150">
             <FaTrash />
@@ -75,7 +75,7 @@ export default function CompUserStorage() {
         </button>
         <button
           onClick={() => navigate("/purchase-premium")}
-          className="group px-3 border-1 flex justify-between items-center gap-1 h-8 cursor-pointer w-full sm:w-1/2 tracking-wider duration-300 rounded-full"
+          className="group px-3 border-1 flex justify-between items-center gap-1 h-8 cursor-pointer w-full sm:w-1/2 tracking-wider duration-300 rounded-sm"
         >
           <span className="text-sm group-hover:scale-150 duration-150">
             <BiSolidPurchaseTag />
@@ -83,7 +83,7 @@ export default function CompUserStorage() {
           Buy Premium
         </button>
         <button
-          className="group px-3 border-1 flex justify-between items-center gap-1 h-8 cursor-pointer w-full sm:w-1/2 tracking-wider duration-300 rounded-full"
+          className="group px-3 border-1 flex justify-between items-center gap-1 h-8 cursor-pointer w-full sm:w-1/2 tracking-wider duration-300 rounded-sm"
           onClick={handleLogout}
         >
           <span className="text-sm group-hover:scale-150 duration-150">
